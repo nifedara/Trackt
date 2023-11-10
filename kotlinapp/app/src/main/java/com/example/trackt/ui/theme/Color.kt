@@ -19,3 +19,5 @@ val TracktBlue2 = Color(0xFF56ACDC)
 
 val TracktWhite1 = Color(0xFFFDFDFD)
 val TracktGray1 = Color(0xFFF0F0F0)
+
+val TracktPink1 = Color(0xFFF4B5ED)

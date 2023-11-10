@@ -10,6 +10,8 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.navigation.compose.rememberNavController
+import com.example.trackt.ui.navigation.SetUpNavigationGraph
 import com.example.trackt.ui.theme.TracktTheme
 
 class MainActivity : ComponentActivity() {
@@ -21,23 +23,18 @@ class MainActivity : ComponentActivity() {
                 Surface(
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
-                ) {
-                    Greeting("Android")
+                )
+                {
+                    SetUpNavigationGraph(navController = rememberNavController())
                 }
             }
         }
     }
 }
 
-@Composable
-fun Greeting(name: String) {
-    Text(text = "Hello $name!")
-}
 
 @Preview(showBackground = true)
 @Composable
 fun DefaultPreview() {
-    TracktTheme {
-        Greeting("Android")
-    }
+    TracktTheme { }
 }

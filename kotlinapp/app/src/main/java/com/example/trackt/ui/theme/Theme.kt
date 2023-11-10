@@ -15,16 +15,20 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalView
 import androidx.core.view.ViewCompat
 
-private val DarkColorScheme = darkColorScheme(
+private val darkColorScheme = darkColorScheme(
     primary = TracktPurple1,
     secondary = TracktBlue1,
-    tertiary = TracktWhite1
+    tertiary = TracktWhite1,
+    inverseSurface = TracktGray1,
+    primaryContainer = TracktPink1
 )
 
-private val LightColorScheme = lightColorScheme(
+private val lightColorScheme = lightColorScheme(
     primary = TracktPurple1,
     secondary = TracktBlue1,
-    tertiary = TracktWhite1
+    tertiary = TracktWhite1,
+    inverseSurface = TracktGray1,
+    primaryContainer = TracktPink1
 
     /* Other default colors to override
     background = Color(0xFFFFFBFE),
@@ -49,14 +53,14 @@ fun TracktTheme(
             val context = LocalContext.current
             if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
         }
-        darkTheme -> DarkColorScheme
-        else -> LightColorScheme
+        darkTheme -> darkColorScheme
+        else -> lightColorScheme
     }
     val view = LocalView.current
     if (!view.isInEditMode) {
         SideEffect {
-            (view.context as Activity).window.statusBarColor = colorScheme.primary.toArgb()
-            ViewCompat.getWindowInsetsController(view)?.isAppearanceLightStatusBars = darkTheme
+            (view.context as Activity).window.statusBarColor = darkColorScheme.inverseSurface.toArgb()
+            ViewCompat.getWindowInsetsController(view)?.isAppearanceLightStatusBars = true //was previously: darkTheme
         }
     }
 
