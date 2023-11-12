@@ -30,6 +30,7 @@ fun ProfileScreen(
         topBar = {
             TopBar(
                 canNavigateBack = false,
+                requiresLogo = false
             )
         }
     ) {

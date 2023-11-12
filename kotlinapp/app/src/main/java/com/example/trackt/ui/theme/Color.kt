@@ -11,6 +11,7 @@ val PurpleGrey40 = Color(0xFF625b71)
 val Pink40 = Color(0xFF7D5260)
 
 val TracktPurple1 = Color(0xFF7D1679)
+val TracktPurple11 = Color(0xFF500D3D)
 val TracktPurple2 = Color(0xFF800854)
 val TracktPurple3 = Color(0xFFDDC3DC)
 

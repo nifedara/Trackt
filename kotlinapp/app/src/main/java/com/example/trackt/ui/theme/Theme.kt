@@ -1,6 +1,7 @@
 package com.example.trackt.ui.theme
 
 import android.app.Activity
+import android.graphics.Color.toArgb
 import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
@@ -20,7 +21,7 @@ private val darkColorScheme = darkColorScheme(
     secondary = TracktBlue1,
     tertiary = TracktWhite1,
     inverseSurface = TracktGray1,
-    primaryContainer = TracktPink1
+    primaryContainer = TracktPink1,
 )
 
 private val lightColorScheme = lightColorScheme(
@@ -59,7 +60,7 @@ fun TracktTheme(
     val view = LocalView.current
     if (!view.isInEditMode) {
         SideEffect {
-            (view.context as Activity).window.statusBarColor = darkColorScheme.inverseSurface.toArgb()
+            (view.context as Activity).window.statusBarColor = darkColorScheme.tertiary.toArgb()
             ViewCompat.getWindowInsetsController(view)?.isAppearanceLightStatusBars = true //was previously: darkTheme
         }
     }

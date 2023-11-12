@@ -7,6 +7,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.example.trackt.ui.screens.LoginScreen
 import com.example.trackt.ui.screens.SignupScreen
+import com.example.trackt.ui.screens.TravelsScreen
 import com.example.trackt.ui.screens.WelcomeScreen
 
 //The App's Navigation
@@ -25,12 +26,19 @@ fun SetUpNavigationGraph(navController: NavHostController) {
         //signup screen
         composable(route = SignupScreen.route)
         {
-            SignupScreen()
+            SignupScreen(navController = navController)
         }
         //login screen
         composable(route = LoginScreen.route)
         {
             LoginScreen()
+            //LoginScreen(navController = navController)
+        }
+        //signup screen
+        composable(route = TravelsScreen.route)
+        {
+            TravelsScreen()
+            //TravelsScreen(navController = navController)
         }
     }
 }

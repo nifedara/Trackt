@@ -51,6 +51,7 @@ fun LoginScreen(
         topBar = {
             TopBar(
                 canNavigateBack = false,
+                requiresLogo = true
             )
         }
     ) {

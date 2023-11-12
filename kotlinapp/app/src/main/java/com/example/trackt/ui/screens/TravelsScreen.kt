@@ -30,6 +30,7 @@ fun TravelsScreen(
         topBar = {
             TopBar(
                 canNavigateBack = false,
+                requiresLogo = false
             )
         }
     ) {

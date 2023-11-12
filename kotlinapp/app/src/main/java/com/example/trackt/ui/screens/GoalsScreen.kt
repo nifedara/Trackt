@@ -30,6 +30,7 @@ fun GoalsScreen(
         topBar = {
             TopBar(
                 canNavigateBack = false,
+                requiresLogo = false
             )
         }
     ) {

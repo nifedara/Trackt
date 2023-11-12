@@ -1,13 +1,12 @@
 package com.example.trackt.ui.screens
 
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.ExperimentalAnimationApi
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -20,11 +19,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.BlendMode.Companion.Color
-import androidx.compose.ui.graphics.BlendMode.Companion.Screen
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -33,7 +29,6 @@ import androidx.navigation.NavHostController
 import com.example.trackt.ui.navigation.NavigationDestination
 import com.example.trackt.ui.theme.Caudex
 import com.example.trackt.ui.theme.Shapes
-import com.example.trackt.ui.theme.TracktBlue1
 import com.example.trackt.ui.theme.TracktPink1
 import com.example.trackt.ui.theme.TracktPurple1
 import com.example.trackt.ui.util.OnboardingPage
@@ -138,12 +133,16 @@ fun GetStartedButton(
             Button(
                 modifier = Modifier.fillMaxWidth(),
                 onClick = onClick,
+                shape = MaterialTheme.shapes.small,
                 colors = ButtonDefaults.buttonColors(
                     containerColor = TracktPink1,
                     contentColor = TracktPurple1
                 )
             ) {
-                Text(text = "Get Started")
+                Text(text = "Get Started",
+                    fontFamily = Caudex,
+                    fontSize = 16.sp,
+                    textAlign = TextAlign.Center)
             }
         }
     }
