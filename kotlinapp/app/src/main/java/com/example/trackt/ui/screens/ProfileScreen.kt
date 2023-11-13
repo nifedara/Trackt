@@ -18,9 +18,6 @@ import androidx.compose.ui.unit.dp
 import com.example.trackt.TopBar
 import com.example.trackt.ui.navigation.NavigationDestination
 
-object ProfileScreen : NavigationDestination {
-    override val route = "profile"
-}
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable

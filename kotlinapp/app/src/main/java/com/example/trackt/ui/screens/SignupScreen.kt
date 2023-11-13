@@ -41,12 +41,14 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.example.trackt.R
 import com.example.trackt.TopBar
+import com.example.trackt.ui.navigation.Graph
 import com.example.trackt.ui.navigation.NavigationDestination
 import com.example.trackt.ui.theme.Caudex
 import com.example.trackt.ui.theme.TracktGray1
 import com.example.trackt.ui.theme.TracktPurple11
 import com.example.trackt.ui.theme.TracktPurple2
 import com.example.trackt.ui.theme.TracktPurple3
+import com.example.trackt.ui.util.BottomNavRoute
 
 object SignupScreen : NavigationDestination {
     override val route = "signup"
@@ -91,7 +93,7 @@ fun SignupScreen(navController: NavHostController,
                     ){
                         SignupForm {
                             navController.popBackStack()
-                            navController.navigate(TravelsScreen.route)
+                            navController.navigate(Graph.HOME)
                         }
                         SignupOther{
                             navController.popBackStack()
@@ -209,7 +211,7 @@ fun SignupForm( onClick: () -> Unit,
                 fontFamily = Caudex,
                 fontSize = 10.sp,
                 textAlign = TextAlign.Left,
-                color = TracktPurple11,
+                color = Black,
                 letterSpacing = (-0.41).sp
             )
         }

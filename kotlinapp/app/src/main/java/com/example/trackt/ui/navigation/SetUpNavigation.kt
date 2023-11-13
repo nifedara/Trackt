@@ -5,6 +5,7 @@ import androidx.compose.runtime.remember
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import com.example.trackt.TracktMainApp
 import com.example.trackt.ui.screens.LoginScreen
 import com.example.trackt.ui.screens.SignupScreen
 import com.example.trackt.ui.screens.TravelsScreen
@@ -31,14 +32,14 @@ fun SetUpNavigationGraph(navController: NavHostController) {
         //login screen
         composable(route = LoginScreen.route)
         {
-            LoginScreen()
-            //LoginScreen(navController = navController)
+            LoginScreen(navController = navController)
         }
-        //signup screen
-        composable(route = TravelsScreen.route)
-        {
-            TravelsScreen()
-            //TravelsScreen(navController = navController)
+        composable(route = Graph.HOME) {
+            TracktMainApp()
         }
     }
+}
+
+object Graph {
+    const val HOME = "home_graph"
 }

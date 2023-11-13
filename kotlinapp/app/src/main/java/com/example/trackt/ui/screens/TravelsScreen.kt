@@ -18,10 +18,6 @@ import androidx.compose.ui.unit.dp
 import com.example.trackt.TopBar
 import com.example.trackt.ui.navigation.NavigationDestination
 
-object TravelsScreen : NavigationDestination {
-    override val route = "travels"
-}
-
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun TravelsScreen(

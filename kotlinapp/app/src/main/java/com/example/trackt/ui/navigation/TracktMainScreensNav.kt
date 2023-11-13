@@ -13,7 +13,7 @@ import com.example.trackt.ui.util.BottomNavRoute
 fun BottomNavGraph(navController: NavHostController) {
     NavHost(
         navController = navController,
-        route = BottomNavRoute.Travels.route,
+        route = Graph.HOME,
         startDestination = BottomNavRoute.Travels.route
     ) {
         composable(route = BottomNavRoute.Travels.route) {

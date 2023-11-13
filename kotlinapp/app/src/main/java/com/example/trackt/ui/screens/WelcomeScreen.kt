@@ -147,6 +147,7 @@ fun GetStartedButton(
         }
     }
 }
+
 @Composable
 @Preview(showBackground = true)
 fun FirstOnBoardingScreenPreview() {
