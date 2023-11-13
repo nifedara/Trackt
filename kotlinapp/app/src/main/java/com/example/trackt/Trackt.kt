@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -20,8 +21,10 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavDestination
 import androidx.navigation.NavDestination.Companion.hierarchy
@@ -31,8 +34,13 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.example.trackt.ui.navigation.BottomNavGraph
 import com.example.trackt.ui.theme.Caudex
+import com.example.trackt.ui.theme.Pink40
+import com.example.trackt.ui.theme.PurpleGrey40
+import com.example.trackt.ui.theme.TracktGray1
 import com.example.trackt.ui.theme.TracktPurple1
+import com.example.trackt.ui.theme.TracktPurple3
 import com.example.trackt.ui.theme.TracktWhite1
+import com.example.trackt.ui.theme.white20
 import com.example.trackt.ui.util.BottomNavRoute
 
 /**
@@ -101,7 +109,7 @@ fun BottomBar(navController: NavHostController) {
 
     val bottomBarDestination = screens.any { it.route == currentDestination?.route }
     if (bottomBarDestination) {
-        NavigationBar(containerColor = MaterialTheme.colorScheme.secondary) {
+        NavigationBar(containerColor = white20, tonalElevation = 20.dp) {
             screens.forEach { screen ->
                 AddItem(
                     screen = screen,
@@ -133,11 +141,11 @@ fun RowScope.AddItem(
             it.route == screen.route
         } == true,
         colors = NavigationBarItemDefaults.colors(
-            selectedIconColor = MaterialTheme.colorScheme.onPrimaryContainer,
-            unselectedIconColor = MaterialTheme.colorScheme.onSecondary,
-            selectedTextColor = MaterialTheme.colorScheme.onPrimaryContainer,
-            unselectedTextColor = MaterialTheme.colorScheme.onSecondary,
-            indicatorColor = MaterialTheme.colorScheme.primary
+            selectedIconColor = TracktPurple1,
+            selectedTextColor = TracktPurple1,
+            unselectedIconColor = PurpleGrey40, //a lighter Trackt purple
+            unselectedTextColor = PurpleGrey40, //a lighter Trackt purple
+            indicatorColor = TracktPurple3
         ),
         onClick = {
             navController.navigate(screen.route) {

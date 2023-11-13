@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.requiredSize
 import androidx.compose.material3.Button
@@ -29,6 +30,7 @@ import androidx.navigation.NavHostController
 import com.example.trackt.ui.navigation.NavigationDestination
 import com.example.trackt.ui.theme.Caudex
 import com.example.trackt.ui.theme.Shapes
+import com.example.trackt.ui.theme.TracktBlue1
 import com.example.trackt.ui.theme.TracktPink1
 import com.example.trackt.ui.theme.TracktPurple1
 import com.example.trackt.ui.util.OnboardingPage
@@ -108,7 +110,8 @@ fun PagerScreen(onboardingPage: OnboardingPage) {
             text = onboardingPage.description,
             fontFamily = Caudex,
             fontSize = 30.sp,
-            textAlign = TextAlign.Left
+            textAlign = TextAlign.Left,
+            color = TracktBlue1
         )
     }
 }

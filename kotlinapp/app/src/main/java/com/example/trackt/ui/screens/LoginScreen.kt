@@ -42,6 +42,7 @@ import com.example.trackt.ui.theme.TracktGray1
 import com.example.trackt.ui.theme.TracktPurple11
 import com.example.trackt.ui.theme.TracktPurple2
 import com.example.trackt.ui.theme.TracktPurple3
+import com.example.trackt.ui.theme.TracktWhite1
 
 object LoginScreen : NavigationDestination {
     override val route = "login"
@@ -57,7 +58,8 @@ fun LoginScreen(navController: NavHostController,
                 canNavigateBack = false,
                 requiresLogo = true
             )
-        }
+        },
+        containerColor = TracktWhite1
     ) {
         Column(
             modifier = Modifier
@@ -72,7 +74,7 @@ fun LoginScreen(navController: NavHostController,
                     .offset(0.dp, 90.dp), horizontalArrangement = Arrangement.Start
             ) {
                 ElevatedCard(
-                    elevation = CardDefaults.cardElevation(defaultElevation = 1.dp),
+                    elevation = CardDefaults.cardElevation(defaultElevation = 1.4.dp),
                     modifier = Modifier.fillMaxWidth(),
                     colors = CardColors(containerColor = Color.White, disabledContainerColor = Color.White,
                         contentColor = Color.White, disabledContentColor = Color.White
@@ -109,7 +111,7 @@ fun LoginForm( onClick: () -> Unit,
     ) {
         Row(
             modifier = Modifier
-                .fillMaxWidth()
+                    .fillMaxWidth()
                 .padding(top = 10.dp),
             horizontalArrangement = Arrangement.Start
         ) {
