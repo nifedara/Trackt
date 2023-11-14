@@ -1,9 +1,12 @@
 package com.example.trackt.ui.navigation
 
 import androidx.compose.runtime.Composable
+import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.compose.navigation
+import com.example.trackt.ui.screens.CreateDestinationScreen
 import com.example.trackt.ui.screens.GoalsScreen
 import com.example.trackt.ui.screens.ProfileScreen
 import com.example.trackt.ui.screens.TravelsScreen
@@ -17,7 +20,7 @@ fun BottomNavGraph(navController: NavHostController) {
         startDestination = BottomNavRoute.Travels.route
     ) {
         composable(route = BottomNavRoute.Travels.route) {
-            TravelsScreen()
+            TravelsScreen(navController = navController)
         }
         composable(route = BottomNavRoute.Goals.route) {
             GoalsScreen()
@@ -25,6 +28,18 @@ fun BottomNavGraph(navController: NavHostController) {
         composable( route = BottomNavRoute.Profile.route,
         ) {
             ProfileScreen()
+        }
+        tracktNavGraph(navController = navController)
+    }
+}
+
+fun NavGraphBuilder.tracktNavGraph(navController: NavHostController) {
+    navigation(
+        route = Graph.TRACKT,
+        startDestination = CreateDestinationScreen.route
+    ) {
+        composable(route = CreateDestinationScreen.route) {
+            CreateDestinationScreen(navController = navController)
         }
     }
 }

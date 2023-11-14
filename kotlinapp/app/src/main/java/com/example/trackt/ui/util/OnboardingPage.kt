@@ -11,19 +11,14 @@ sealed class OnboardingPage(
 ) {
     data object First : OnboardingPage(
         image = R.drawable.welcomepic1,
-        description = "Your travel \n" +
-                "destinations in one \n" +
-                "place"
+        description = "Your travel \n" + "destinations in one \n" + "place"
     )
     data object Second : OnboardingPage(
         image = R.drawable.welcomepic2,
-        description = "Set and track \n" +
-                "your travel \n" +
-                "goals"
+        description = "Set and track \n" + "your travel \n" + "goals"
     )
     data object Third : OnboardingPage(
         image = R.drawable.welcomepic3,
-        description = "Make travel \n" +
-                "itineraries"
+        description = "Make travel \n" + "itineraries"
     )
 }

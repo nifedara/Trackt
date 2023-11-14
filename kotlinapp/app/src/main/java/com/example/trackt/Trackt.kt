@@ -3,10 +3,6 @@ package com.example.trackt
 import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -21,7 +17,6 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -34,9 +29,7 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.example.trackt.ui.navigation.BottomNavGraph
 import com.example.trackt.ui.theme.Caudex
-import com.example.trackt.ui.theme.Pink40
 import com.example.trackt.ui.theme.PurpleGrey40
-import com.example.trackt.ui.theme.TracktGray1
 import com.example.trackt.ui.theme.TracktPurple1
 import com.example.trackt.ui.theme.TracktPurple3
 import com.example.trackt.ui.theme.TracktWhite1
@@ -67,22 +60,26 @@ fun TopBar(
 ) {
     if (canNavigateBack) {
         TopAppBar(
-            title = { Text(text = "Go Back", style = MaterialTheme.typography.labelSmall) },
+            colors = TopAppBarDefaults.topAppBarColors(
+                containerColor = TracktWhite1,
+                titleContentColor = TracktPurple1,
+            ),
+            title = { Text(text = "Go Back", style = MaterialTheme.typography.bodyMedium) },
             modifier = modifier,
             navigationIcon = {
                 IconButton(onClick = navigateUp) {
                     Icon(
-                        imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                        painter = painterResource(id = R.drawable.back_icon),
+                        tint = TracktPurple1,
                         contentDescription = "back"
                     )
                 }
             })
-    } else if (requiresLogo){
+    }
+    else if (requiresLogo){
         TopAppBar(
             colors = TopAppBarDefaults.topAppBarColors(
-                containerColor = TracktWhite1,
-                //titleContentColor = MaterialTheme.colorScheme.primary,
-            ),
+                containerColor = TracktWhite1),
             title = {
                 Text(
                     modifier = Modifier.fillMaxWidth(),

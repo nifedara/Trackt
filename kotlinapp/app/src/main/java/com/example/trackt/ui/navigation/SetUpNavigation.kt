@@ -1,14 +1,12 @@
 package com.example.trackt.ui.navigation
 
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.example.trackt.TracktMainApp
 import com.example.trackt.ui.screens.LoginScreen
 import com.example.trackt.ui.screens.SignupScreen
-import com.example.trackt.ui.screens.TravelsScreen
 import com.example.trackt.ui.screens.WelcomeScreen
 
 //The App's Navigation
@@ -42,4 +40,5 @@ fun SetUpNavigationGraph(navController: NavHostController) {
 
 object Graph {
     const val HOME = "home_graph"
+    const val TRACKT = "trackt_graph"
 }
