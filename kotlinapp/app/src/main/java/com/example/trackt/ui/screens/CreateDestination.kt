@@ -2,10 +2,13 @@ package com.example.trackt.ui.screens
 
 import android.annotation.SuppressLint
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
@@ -31,6 +34,7 @@ import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.PathEffect
 import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.style.TextAlign
@@ -65,34 +69,43 @@ fun CreateDestinationScreen(navController: NavHostController,
         },
         containerColor = TracktWhite2
     ) {
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(24.dp),
-            verticalArrangement = Arrangement.Center
-        )
-        {
-            Row(
+        Box(modifier = Modifier.fillMaxSize()) {
+            Image(
+                painterResource(id = R.drawable.doodle2),
+                contentDescription = "travel doodle",
+                contentScale = ContentScale.FillBounds,
+                alpha = 0.1f,
+                modifier = Modifier.matchParentSize()
+            )
+            Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .offset(0.dp, 90.dp), horizontalArrangement = Arrangement.Start
-            ) {
-                ElevatedCard(
-                    elevation = CardDefaults.cardElevation(defaultElevation = 1.4.dp),
-                    modifier = Modifier.fillMaxWidth(),
-                    colors = CardColors(containerColor = Color.White, disabledContainerColor = Color.White,
-                        contentColor = Color.White, disabledContentColor = Color.White
-                    )
+                    .padding(24.dp),
+                verticalArrangement = Arrangement.Center
+            )
+            {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .offset(0.dp, 90.dp), horizontalArrangement = Arrangement.Start
                 ) {
-                    Column(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(18.dp),
-                        verticalArrangement = Arrangement.Center
-                    ){
-                        CreateDestinationForm {
-                            navController.popBackStack()
-                            navController.navigate(Graph.HOME)
+                    ElevatedCard(
+                        elevation = CardDefaults.cardElevation(defaultElevation = 1.4.dp),
+                        modifier = Modifier.fillMaxWidth(),
+                        colors = CardColors(containerColor = Color.White, disabledContainerColor = Color.White,
+                            contentColor = Color.White, disabledContentColor = Color.White
+                        )
+                    ) {
+                        Column(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(18.dp),
+                            verticalArrangement = Arrangement.Center
+                        ){
+                            CreateDestinationForm {
+                                navController.popBackStack()
+                                navController.navigate(Graph.HOME)
+                            }
                         }
                     }
                 }

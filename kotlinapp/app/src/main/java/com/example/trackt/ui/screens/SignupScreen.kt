@@ -1,8 +1,10 @@
 package com.example.trackt.ui.screens
 
 import android.annotation.SuppressLint
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -33,6 +35,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Color.Companion.Black
 import androidx.compose.ui.graphics.Color.Companion.Blue
 import androidx.compose.ui.graphics.Color.Companion.White
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -69,37 +72,46 @@ fun SignupScreen(navController: NavHostController,
         },
         containerColor = TracktWhite1
     ) {
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(24.dp),
-            verticalArrangement = Arrangement.Center
-        )
-        {
-            Row(
+        Box(modifier = Modifier.fillMaxSize()) {
+            Image(
+                painterResource(id = R.drawable.traveldoodle),
+                contentDescription = "travel doodle",
+                contentScale = ContentScale.FillBounds,
+                alpha = 0.14f,
+                modifier = Modifier.matchParentSize()
+            )
+            Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .offset(0.dp, 90.dp), horizontalArrangement = Arrangement.Start
-            ) {
-                ElevatedCard(
-                    elevation = CardDefaults.cardElevation(defaultElevation = 1.3.dp),
-                    modifier = Modifier.fillMaxWidth(),
-                    colors = CardColors(containerColor = White, disabledContainerColor = White,
-                        contentColor = White, disabledContentColor = White)
+                    .padding(24.dp),
+                verticalArrangement = Arrangement.Center
+            )
+            {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .offset(0.dp, 90.dp), horizontalArrangement = Arrangement.Start
                 ) {
-                    Column(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(18.dp),
-                        verticalArrangement = Arrangement.Center
-                    ){
-                        SignupForm {
-                            navController.popBackStack()
-                            navController.navigate(Graph.HOME)
-                        }
-                        SignupOther{
-                            navController.popBackStack()
-                            navController.navigate(LoginScreen.route)
+                    ElevatedCard(
+                        elevation = CardDefaults.cardElevation(defaultElevation = 1.3.dp),
+                        modifier = Modifier.fillMaxWidth(),
+                        colors = CardColors(containerColor = White, disabledContainerColor = White,
+                            contentColor = White, disabledContentColor = White)
+                    ) {
+                        Column(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(18.dp),
+                            verticalArrangement = Arrangement.Center
+                        ){
+                            SignupForm {
+                                navController.popBackStack()
+                                navController.navigate(Graph.HOME)
+                            }
+                            SignupOther{
+                                navController.popBackStack()
+                                navController.navigate(LoginScreen.route)
+                            }
                         }
                     }
                 }

@@ -2,6 +2,6 @@ import React from 'react'
 
 export const SignUpPage = () => {
   return (
-    <div>SignUpPage</div>
+    <div className="h-screen w-screen">SignUpPage</div>
   )
 }
