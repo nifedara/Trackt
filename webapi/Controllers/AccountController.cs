@@ -36,19 +36,29 @@ namespace webapi.Controllers
             {
                 if(ModelState.IsValid)
                 {
-                    var newUser = new TracktUser
+                    // Check if a user with the same email already exists
+                    var existingUser = await _userManager!.FindByEmailAsync(input.Email!);
+                    if (existingUser != null)
                     {
-                        UserName = input.Name,
-                        Email = input.Email
-                    };
-                    var result = await _userManager!.CreateAsync(newUser, input.Password!);
-                    if (result.Succeeded)
-                    {
-                        //log later //TODO
-                        return StatusCode(201, $"User '{newUser.UserName}' has been created.");
+                        ModelState.AddModelError("Email", "This email is already in use");
+                        return BadRequest(ModelState);
                     }
                     else
-                        throw new Exception(string.Format("Error: {0}", string.Join(", ", result.Errors.Select(e => e.Description))));
+                    {
+                        var newUser = new TracktUser
+                        {
+                            Name = input.Name,
+                            Email = input.Email
+                        };
+                        var result = await _userManager!.CreateAsync(newUser, input.Password!);
+                        if (result.Succeeded)
+                        {
+                            //log later //TODO
+                            return StatusCode(201, $"User '{newUser.Name}' has been created.");
+                        }
+                        else
+                            throw new Exception(string.Format("Error: {0}", string.Join(", ", result.Errors.Select(e => e.Description))));
+                    }
                 }
                 else
                 {
@@ -75,7 +85,6 @@ namespace webapi.Controllers
         }
 
         [HttpPost]
-        //[ResponseCache(CacheProfileName = "NoCache")]
         public async Task<ActionResult> Login(LoginDTO input)
         {
             try
