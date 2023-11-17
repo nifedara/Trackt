@@ -1,7 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc.ApplicationModels;
-using Microsoft.AspNetCore.Mvc.Infrastructure;
-using Microsoft.EntityFrameworkCore;
-using System.IdentityModel.Tokens.Jwt;
+﻿using System.IdentityModel.Tokens.Jwt;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -36,29 +33,20 @@ namespace webapi.Controllers
             {
                 if(ModelState.IsValid)
                 {
-                    // Check if a user with the same email already exists
-                    var existingUser = await _userManager!.FindByEmailAsync(input.Email!);
-                    if (existingUser != null)
+                    var newUser = new TracktUser
                     {
-                        ModelState.AddModelError("Email", "This email is already in use");
-                        return BadRequest(ModelState);
+                        Name = input.Name,
+                        Email = input.Email,
+                        UserName = input.Email
+                    };
+                    var result = await _userManager!.CreateAsync(newUser, input.Password!);
+                    if (result.Succeeded)
+                    {
+                        //log later //TODO
+                        return StatusCode(201, $"User '{newUser.Name}' has been created.");
                     }
                     else
-                    {
-                        var newUser = new TracktUser
-                        {
-                            Name = input.Name,
-                            Email = input.Email
-                        };
-                        var result = await _userManager!.CreateAsync(newUser, input.Password!);
-                        if (result.Succeeded)
-                        {
-                            //log later //TODO
-                            return StatusCode(201, $"User '{newUser.Name}' has been created.");
-                        }
-                        else
-                            throw new Exception(string.Format("Error: {0}", string.Join(", ", result.Errors.Select(e => e.Description))));
-                    }
+                        throw new Exception(string.Format("Error: {0}", string.Join(", ", result.Errors.Select(e => e.Description))));
                 }
                 else
                 {
