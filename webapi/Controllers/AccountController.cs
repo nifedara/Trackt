@@ -17,7 +17,8 @@ namespace webapi.Controllers
         private readonly UserManager<TracktUser>? _userManager;
         private readonly SignInManager<TracktUser>? _signInManager;
 
-        public AccountController(ApplicationDbContext? context,IConfiguration? configuration,UserManager<TracktUser>? userManager,SignInManager<TracktUser>? signInManager)
+        public AccountController(ApplicationDbContext? context,IConfiguration? configuration,
+            UserManager<TracktUser>? userManager,SignInManager<TracktUser>? signInManager)
         {
             _context = context;
             _configuration = configuration;
@@ -91,7 +92,7 @@ namespace webapi.Controllers
                                 SecurityAlgorithms.HmacSha256);
 
                         var claims = new List<Claim>
-                    { new Claim(ClaimTypes.Name, user.UserName!) };
+                    { new Claim(ClaimTypes.NameIdentifier, user.Id) };
 
                         var jwtObject = new JwtSecurityToken(
                             issuer: _configuration["JWT:Issuer"],
