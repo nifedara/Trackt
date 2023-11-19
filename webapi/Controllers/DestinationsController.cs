@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
 using webapi.Models;
 
@@ -63,6 +64,42 @@ namespace webapi.Controllers
             
         }
 
-        
+        [HttpPost]
+        [Route("Get")]
+        public async Task<ActionResult> Get(int? destinationId)
+        {
+            try
+            {
+                if (destinationId.HasValue)
+                {
+                    //destination by id
+                    var destination = await _context!.Destinations.FindAsync(destinationId);
+                    if (destination != null)
+                        return Ok(destination);
+                    else
+                        return NotFound();
+                }
+                else
+                {
+                    //all destinations
+                    var destinations = await _context!.Destinations.ToListAsync();
+                    if (destinations == null || destinations.Count == 0)
+                        return NotFound();
+                    else
+                        return Ok(destinations);
+
+                }
+            }
+            catch  (Exception ex)
+            {
+                var exceptionDetails = new ProblemDetails
+                {
+                    Detail = ex.Message,
+                    Status = StatusCodes.Status500InternalServerError,
+                    Type = "https://tools.ietf.org/html/rfc7231#section-6.6.1"
+                };
+                return StatusCode(StatusCodes.Status500InternalServerError, exceptionDetails);
+            }
+        }
     }
 }
