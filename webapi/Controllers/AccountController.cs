@@ -1,7 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc.ApplicationModels;
-using Microsoft.AspNetCore.Mvc.Infrastructure;
-using Microsoft.EntityFrameworkCore;
-using System.IdentityModel.Tokens.Jwt;
+﻿using System.IdentityModel.Tokens.Jwt;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -20,7 +17,8 @@ namespace webapi.Controllers
         private readonly UserManager<TracktUser>? _userManager;
         private readonly SignInManager<TracktUser>? _signInManager;
 
-        public AccountController(ApplicationDbContext? context,IConfiguration? configuration,UserManager<TracktUser>? userManager,SignInManager<TracktUser>? signInManager)
+        public AccountController(ApplicationDbContext? context,IConfiguration? configuration,
+            UserManager<TracktUser>? userManager,SignInManager<TracktUser>? signInManager)
         {
             _context = context;
             _configuration = configuration;
@@ -38,14 +36,15 @@ namespace webapi.Controllers
                 {
                     var newUser = new TracktUser
                     {
-                        UserName = input.Name,
-                        Email = input.Email
+                        Name = input.Name,
+                        Email = input.Email,
+                        UserName = input.Email
                     };
                     var result = await _userManager!.CreateAsync(newUser, input.Password!);
                     if (result.Succeeded)
                     {
                         //log later //TODO
-                        return StatusCode(201, $"User '{newUser.UserName}' has been created.");
+                        return StatusCode(201, $"User '{newUser.Name}' has been created.");
                     }
                     else
                         throw new Exception(string.Format("Error: {0}", string.Join(", ", result.Errors.Select(e => e.Description))));
@@ -75,7 +74,6 @@ namespace webapi.Controllers
         }
 
         [HttpPost]
-        //[ResponseCache(CacheProfileName = "NoCache")]
         public async Task<ActionResult> Login(LoginDTO input)
         {
             try
@@ -94,7 +92,7 @@ namespace webapi.Controllers
                                 SecurityAlgorithms.HmacSha256);
 
                         var claims = new List<Claim>
-                    { new Claim(ClaimTypes.Name, user.UserName!) };
+                    { new Claim(ClaimTypes.NameIdentifier, user.Id) };
 
                         var jwtObject = new JwtSecurityToken(
                             issuer: _configuration["JWT:Issuer"],
