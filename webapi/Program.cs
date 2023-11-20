@@ -4,18 +4,21 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using webapi.Models;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.OpenApi.Models;
 using System.Security.Claims;
 using System.IdentityModel.Tokens.Jwt;
+using CloudinaryDotNet;
+using Microsoft.Extensions.DependencyInjection;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 
 builder.Services.AddControllers();
-builder.Services.Configure<ApiBehaviorOptions>(options =>
- options.SuppressModelStateInvalidFilter = true);
+builder.Services.Configure<ApiBehaviorOptions>(options => options.SuppressModelStateInvalidFilter = true);
+var cloudinaryCloudName = builder.Configuration["Cloudinary:CloudName"];
+var cloudinaryApiKey = builder.Configuration["Cloudinary:ApiKey"];
+var cloudinaryApiSecret = builder.Configuration["Cloudinary:ApiSecret"];
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
@@ -45,7 +48,7 @@ builder.Services.AddSwaggerGen(options =>
         }
     });
 });
-builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"))); //.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 builder.Services.AddIdentity<TracktUser, IdentityRole>(options =>
 {
     options.User.RequireUniqueEmail = true;
@@ -65,7 +68,7 @@ builder.Services.AddAuthentication(options =>
     options.DefaultSignOutScheme =
         JwtBearerDefaults.AuthenticationScheme;
 }).AddJwtBearer(options =>
-{ options.TokenValidationParameters = new TokenValidationParameters
+{   options.TokenValidationParameters = new TokenValidationParameters
     {
         ValidateIssuer = true,
         ValidIssuer = builder.Configuration["JWT:Issuer"],
@@ -95,6 +98,9 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+app.UseRouting();
+app.UseStaticFiles();
 
 app.UseAuthentication();
 app.UseAuthorization();

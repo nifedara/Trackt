@@ -19,10 +19,10 @@ namespace webapi.Models
         public decimal Budget { get; set; }
         [Required]
         public DateTime Date { get; set; }
+        [Required]
         public string? UserId { get; set; }
 
         // Navigation property for the user
-        [JsonIgnore]
         public TracktUser? User { get; set; }
     }
 }
