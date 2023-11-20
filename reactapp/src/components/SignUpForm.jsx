@@ -3,6 +3,7 @@ import { Field, Form, Formik } from 'formik'
 import * as Yup from "yup"
 import React from 'react'
 import { Link } from 'react-router-dom';
+import { toast } from './Toast';
 
 const getCharacterValidationError = (str) => {
     return `Your password must have at least 1 ${str} character`;
@@ -23,7 +24,7 @@ const signUpFormValidation = Yup.object().shape({
 
 export const SignUpForm = () => {
     return (
-        <Card w={"70%"} size={"lg"}>
+        <Card w={{ md: "70%" }} size={"lg"} zIndex={"9999"}>
             <CardBody>
                 <Heading fontSize={"2xl"} mb={3} textAlign={"center"}>Create Your account</Heading>
                 <Formik
@@ -33,6 +34,11 @@ export const SignUpForm = () => {
                         setTimeout(() => {
                             alert(JSON.stringify(values, null, 2))
                             actions.setSubmitting(false)
+                            toast({
+                                status: "info",
+                                title: "Successfully created an account.",
+                                description: "You can now log in."
+                            })
                         }, 1000)
                     }}
                 >

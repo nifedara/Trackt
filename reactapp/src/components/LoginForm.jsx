@@ -11,7 +11,7 @@ const loginFormValidation = Yup.object().shape({
 
 export const LoginForm = () => {
     return (
-        <Card w={"70%"} size={"lg"}>
+        <Card w={{ md: "70%" }} size={"lg"} zIndex={"9999"}>
             <CardBody>
                 <Heading fontSize={"2xl"} mb={3} textAlign={"center"}>Create Your account</Heading>
                 <Formik
