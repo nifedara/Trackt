@@ -32,13 +32,21 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.example.trackt.R
 import com.example.trackt.TopBar
+import com.example.trackt.application.ApplicationContext
+import com.example.trackt.data.AppViewModelProvider
+import com.example.trackt.data.LoginUIState
+import com.example.trackt.data.SessionManager
+import com.example.trackt.data.TracktViewModel
+import com.example.trackt.data.UserLoginDetails
 import com.example.trackt.ui.navigation.Graph
 import com.example.trackt.ui.navigation.NavigationDestination
 import com.example.trackt.ui.theme.Caudex
@@ -55,7 +63,12 @@ object LoginScreen : NavigationDestination {
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun LoginScreen(navController: NavHostController,
+                viewModel: TracktViewModel = viewModel(factory = AppViewModelProvider.createViewModelInstance())
 ) {
+    val context = LocalContext.current
+
+    val auth: SessionManager = SessionManager(context)
+
     Scaffold(
         topBar = {
             TopBar(
@@ -98,9 +111,13 @@ fun LoginScreen(navController: NavHostController,
                                 .padding(18.dp),
                             verticalArrangement = Arrangement.Center
                         ){
-                            LoginForm {
-                                navController.popBackStack()
-                                navController.navigate(Graph.HOME)
+                            LoginForm(loginUIState = viewModel.loginUIState,
+                                      onValueChange = viewModel::updateLoginUiState){
+                                viewModel.getUser(context)
+                                if (auth.fetchAuthToken() != null){
+                                    navController.popBackStack()
+                                    navController.navigate(Graph.HOME)
+                                }
                             }
                             LoginOther{
                                 navController.popBackStack()
@@ -115,7 +132,9 @@ fun LoginScreen(navController: NavHostController,
 }
 
 @Composable
-fun LoginForm( onClick: () -> Unit,
+fun LoginForm(loginUIState: LoginUIState,
+              onValueChange: (UserLoginDetails) -> Unit = {},
+              onClick: () -> Unit,
 ) {
     Column(
         modifier = Modifier
@@ -124,7 +143,7 @@ fun LoginForm( onClick: () -> Unit,
     ) {
         Row(
             modifier = Modifier
-                    .fillMaxWidth()
+                .fillMaxWidth()
                 .padding(top = 10.dp),
             horizontalArrangement = Arrangement.Start
         ) {
@@ -148,7 +167,7 @@ fun LoginForm( onClick: () -> Unit,
                     textAlign = TextAlign.Left,
                     color = TracktPurple11
                 )
-                TextField(value = "", onValueChange = {},
+                TextField(value = loginUIState.userLoginDetails.email, onValueChange = {onValueChange(loginUIState.userLoginDetails.copy(email = it))},
                     shape = MaterialTheme.shapes.small,
                     modifier = Modifier.height(50.dp),
                     colors = TextFieldDefaults.colors(focusedContainerColor = TracktPurple3, unfocusedContainerColor = TracktGray1,
@@ -169,7 +188,7 @@ fun LoginForm( onClick: () -> Unit,
                     textAlign = TextAlign.Left,
                     color = TracktPurple11
                 )
-                TextField(value = "", onValueChange = {},
+                TextField(value = loginUIState.userLoginDetails.password, onValueChange = {onValueChange(loginUIState.userLoginDetails.copy(password = it))},
                     shape = MaterialTheme.shapes.small,
                     modifier = Modifier.height(50.dp),
                     colors = TextFieldDefaults.colors(focusedContainerColor = TracktPurple3, unfocusedContainerColor = TracktGray1,
@@ -200,6 +219,7 @@ fun LoginForm( onClick: () -> Unit,
                     .fillMaxWidth()
                     .height(50.dp),
                 onClick = onClick,
+                enabled = loginUIState.isEntryValid,
                 shape = MaterialTheme.shapes.small,
                 colors = ButtonDefaults.buttonColors(
                     containerColor = TracktPurple2,

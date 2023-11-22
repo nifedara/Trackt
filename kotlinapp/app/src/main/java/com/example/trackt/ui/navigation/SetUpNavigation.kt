@@ -5,6 +5,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.example.trackt.TracktMainApp
+import com.example.trackt.application.ApplicationContext
 import com.example.trackt.ui.screens.LoginScreen
 import com.example.trackt.ui.screens.SignupScreen
 import com.example.trackt.ui.screens.WelcomeScreen

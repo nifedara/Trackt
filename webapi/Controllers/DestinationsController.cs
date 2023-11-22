@@ -39,10 +39,10 @@ namespace webapi.Controllers
 
                 if (user != null && ModelState.IsValid)
                 {
-                    // Access Image to get the uploaded file
+                    // get the uploaded image
                     var imgfile = input.Image;
 
-                    //////// Cloudinary
+                    // Cloudinary
                     var cloudinaryCloudName = _configuration!["Cloudinary:CloudName"];
                     var cloudinaryApiKey = _configuration["Cloudinary:ApiKey"];
                     var cloudinaryApiSecret = _configuration["Cloudinary:ApiSecret"];
@@ -76,7 +76,7 @@ namespace webapi.Controllers
 
                     _context?.Destinations.Add(newDestination);
 
-                    var result = await _context!.SaveChangesAsync();
+                    await _context!.SaveChangesAsync();
                     return StatusCode(201, $"Destination '{input.DestinationName}' has been created.");
                 }
                 else
@@ -108,23 +108,26 @@ namespace webapi.Controllers
         {
             try
             {
+                //userId
+                var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
                 if (destinationId.HasValue)
                 {
                     //destination by id
-                    var destination = await _context!.Destinations.FindAsync(destinationId);
+                    var destination = _context!.Destinations.Where(u => u.UserId == userId && u.DestinationId == destinationId);
                     if (destination != null)
-                        return Ok(destination);
+                        return Ok(await destination.ToListAsync());
                     else
                         return StatusCode(StatusCodes.Status404NotFound);
                 }
                 else
                 {
                     //all destinations
-                    var destinations = await _context!.Destinations.ToListAsync();
-                    if (destinations == null || destinations.Count == 0)
+                    var destinations = _context!.Destinations.Where(u => u.UserId == userId);
+                    if (destinations == null || !await destinations.AnyAsync())
                         return NotFound();
                     else
-                        return Ok(destinations);
+                        return Ok(await destinations.ToListAsync());
 
                 }
             }
@@ -140,4 +143,6 @@ namespace webapi.Controllers
             }
         }
     }
+
+
 }

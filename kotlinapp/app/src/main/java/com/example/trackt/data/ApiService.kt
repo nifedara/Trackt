@@ -1,5 +1,7 @@
 package com.example.trackt.data
 
+import android.view.Display.Mode
+import com.google.rpc.context.AttributeContext.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.http.Body
@@ -14,8 +16,8 @@ interface ApiService {
     @POST("Account/Create/")
     suspend fun createUser(@Body user: Models.User)
 
-    @GET("Account/Login")
-    suspend fun getUser(@Field("email") email: String, @Field("password") password: String): String
+    @POST("Account/Login")
+    suspend fun getUser(@Body user: Models.UserLogin): retrofit2.Response<Models.LoginResponse>
 
     //destination
     @POST("Destinations/Create")
@@ -31,7 +33,7 @@ interface ApiService {
 
 object RetrofitHelper {
 
-    private const val baseUrl = "http://10.65.10.97:5053/"
+    private const val baseUrl = "http://10.65.10.169:5053/"
 
     private fun getInstance(): Retrofit {
         return Retrofit.Builder().baseUrl(baseUrl)

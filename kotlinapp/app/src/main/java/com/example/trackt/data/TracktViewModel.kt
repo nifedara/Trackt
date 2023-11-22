@@ -1,5 +1,7 @@
 package com.example.trackt.data
 
+import android.content.Context
+import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -9,7 +11,9 @@ import androidx.lifecycle.viewModelScope
 import com.example.trackt.application.ApplicationContext
 import kotlinx.coroutines.launch
 
-class TracktViewModel(private val usersRepository: UsersRepository, private val destinationRepository: DestinationRepository): ViewModel() {
+class TracktViewModel(
+    private val usersRepository: UsersRepository,
+    private val destinationRepository: DestinationRepository): ViewModel() {
 
     var userUIState by mutableStateOf(UserUIState())
     var loginUIState by mutableStateOf(LoginUIState()) //for login
@@ -39,6 +43,22 @@ class TracktViewModel(private val usersRepository: UsersRepository, private val 
         loginUIState =
             LoginUIState(userLoginDetails = userLoginDetails, isEntryValid = validateLoginInput(userLoginDetails))
     }
+    fun getUser(context: Context){
+        val sessionManger: SessionManager = SessionManager(context)
+        viewModelScope.launch {
+            val token = usersRepository.getUser(loginUIState.userLoginDetails.toLogin())
+
+            Log.v("Login token", "${token.body()!!.accessToken} Hello, something happened")
+
+            if (token.body()?.accessToken  != null) {
+                sessionManger.saveAuthToken(token.body()!!.accessToken)
+            }
+
+
+        }
+    }
+
+
 }
 
 data class UserUIState(
@@ -65,7 +85,13 @@ data class  LoginUIState(
 data class UserLoginDetails(
     var email: String = "",
     var password: String = ""
-)
+){
+    fun toLogin(): Models.User = Models.User(
+        name = "",
+        email = email,
+        password = password
+    )
+}
 
 object AppViewModelProvider {
 

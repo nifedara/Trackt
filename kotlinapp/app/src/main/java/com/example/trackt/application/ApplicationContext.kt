@@ -7,7 +7,6 @@ class ApplicationContext : Application() {
 
     override fun onCreate() {
         super.onCreate()
-
         AppViewModelProvider.initialize(this)
     }
 }
