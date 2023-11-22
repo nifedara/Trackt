@@ -1,5 +1,6 @@
 package com.example.trackt.ui.screens
 
+//noinspection UsingMaterialAndMaterial3Libraries
 import android.annotation.SuppressLint
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
@@ -15,8 +16,8 @@ import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+//noinspection UsingMaterialAndMaterial3Libraries
 import androidx.compose.material.Divider
-import androidx.compose.material.MaterialTheme.colors
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CardColors
@@ -38,13 +39,16 @@ import androidx.compose.ui.graphics.Color.Companion.White
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.example.trackt.R
 import com.example.trackt.TopBar
-import com.example.trackt.ui.navigation.Graph
+import com.example.trackt.data.AppViewModelProvider
+import com.example.trackt.data.TracktViewModel
+import com.example.trackt.data.UserFullDetails
+import com.example.trackt.data.UserUIState
 import com.example.trackt.ui.navigation.NavigationDestination
 import com.example.trackt.ui.theme.Caudex
 import com.example.trackt.ui.theme.TracktGray1
@@ -52,7 +56,6 @@ import com.example.trackt.ui.theme.TracktPurple11
 import com.example.trackt.ui.theme.TracktPurple2
 import com.example.trackt.ui.theme.TracktPurple3
 import com.example.trackt.ui.theme.TracktWhite1
-import com.example.trackt.ui.util.BottomNavRoute
 
 object SignupScreen : NavigationDestination {
     override val route = "signup"
@@ -62,7 +65,10 @@ object SignupScreen : NavigationDestination {
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun SignupScreen(navController: NavHostController,
+                 viewModel: TracktViewModel = viewModel(factory = AppViewModelProvider.createViewModelInstance())
 ) {
+    //val coroutineScope = rememberCoroutineScope()
+
     Scaffold(
         topBar = {
             TopBar(
@@ -104,9 +110,11 @@ fun SignupScreen(navController: NavHostController,
                                 .padding(18.dp),
                             verticalArrangement = Arrangement.Center
                         ){
-                            SignupForm {
+                            SignupForm(userUIState = viewModel.userUIState,
+                                onValueChange = viewModel::updateUiState) {
+                                viewModel.createUser()
                                 navController.popBackStack()
-                                navController.navigate(Graph.HOME)
+                                navController.navigate(LoginScreen.route)
                             }
                             SignupOther{
                                 navController.popBackStack()
@@ -121,7 +129,9 @@ fun SignupScreen(navController: NavHostController,
 }
 
 @Composable
-fun SignupForm( onClick: () -> Unit,
+fun SignupForm( userUIState: UserUIState,
+                onValueChange: (UserFullDetails) -> Unit = {},
+                onClick: () -> Unit
 ) {
     Column(
         modifier = Modifier
@@ -142,7 +152,9 @@ fun SignupForm( onClick: () -> Unit,
                 color = TracktPurple11
             )
         }
-        Row( modifier = Modifier.fillMaxWidth().padding(top = 24.dp)
+        Row( modifier = Modifier
+            .fillMaxWidth()
+            .padding(top = 24.dp)
         ) {
             Column {
                 Text(
@@ -152,7 +164,7 @@ fun SignupForm( onClick: () -> Unit,
                     textAlign = TextAlign.Left,
                     color = TracktPurple11
                 )
-                TextField(value = "", onValueChange = {},
+                TextField(value = userUIState.userDetails.name, onValueChange = {onValueChange(userUIState.userDetails.copy(name = it))},
                     shape = MaterialTheme.shapes.small,
                     modifier = Modifier.height(50.dp),
                     colors = TextFieldDefaults.colors(focusedContainerColor = TracktPurple3, unfocusedContainerColor = TracktGray1,
@@ -161,7 +173,9 @@ fun SignupForm( onClick: () -> Unit,
                 )
             }
         }
-        Row( modifier = Modifier.fillMaxWidth().padding(top = 8.dp)
+        Row( modifier = Modifier
+            .fillMaxWidth()
+            .padding(top = 8.dp)
         ) {
             Column {
                 Text(
@@ -171,7 +185,7 @@ fun SignupForm( onClick: () -> Unit,
                     textAlign = TextAlign.Left,
                     color = TracktPurple11
                 )
-                TextField(value = "", onValueChange = {},
+                TextField(value = userUIState.userDetails.email, onValueChange = {onValueChange(userUIState.userDetails.copy(email = it))},
                     shape = MaterialTheme.shapes.small,
                     modifier = Modifier.height(50.dp),
                     colors = TextFieldDefaults.colors(focusedContainerColor = TracktPurple3, unfocusedContainerColor = TracktGray1,
@@ -180,7 +194,9 @@ fun SignupForm( onClick: () -> Unit,
                 )
             }
         }
-        Row( modifier = Modifier.fillMaxWidth().padding(top = 8.dp)
+        Row( modifier = Modifier
+            .fillMaxWidth()
+            .padding(top = 8.dp)
         ) {
             Column {
                 Text(
@@ -190,7 +206,7 @@ fun SignupForm( onClick: () -> Unit,
                     textAlign = TextAlign.Left,
                     color = TracktPurple11
                 )
-                TextField(value = "", onValueChange = {},
+                TextField(value = userUIState.userDetails.password, onValueChange = {onValueChange(userUIState.userDetails.copy(password = it))},
                     shape = MaterialTheme.shapes.small,
                     modifier = Modifier.height(50.dp),
                     colors = TextFieldDefaults.colors(focusedContainerColor = TracktPurple3, unfocusedContainerColor = TracktGray1,
@@ -199,7 +215,9 @@ fun SignupForm( onClick: () -> Unit,
                 )
             }
         }
-        Row( modifier = Modifier.fillMaxWidth().padding(top = 8.dp)
+        Row( modifier = Modifier
+            .fillMaxWidth()
+            .padding(top = 8.dp)
         ) {
             Column {
                 Text(
@@ -209,7 +227,7 @@ fun SignupForm( onClick: () -> Unit,
                     textAlign = TextAlign.Left,
                     color = TracktPurple11
                 )
-                TextField(value = "", onValueChange = {},
+                TextField(value = userUIState.userDetails.confirmPassword, onValueChange = {onValueChange(userUIState.userDetails.copy(confirmPassword = it))},
                     shape = MaterialTheme.shapes.small,
                     modifier = Modifier.height(50.dp),
                     colors = TextFieldDefaults.colors(focusedContainerColor = TracktPurple3, unfocusedContainerColor = TracktGray1,
@@ -218,7 +236,9 @@ fun SignupForm( onClick: () -> Unit,
                 )
             }
         }
-        Row( modifier = Modifier.fillMaxWidth().padding(top = 8.dp)
+        Row( modifier = Modifier
+            .fillMaxWidth()
+            .padding(top = 8.dp)
         ) {
             Text(
                 text = "By creating an account, you agree with our terms",
@@ -229,11 +249,16 @@ fun SignupForm( onClick: () -> Unit,
                 letterSpacing = (-0.41).sp
             )
         }
-        Row( modifier = Modifier.fillMaxWidth().padding(top = 14.dp)
+        Row( modifier = Modifier
+            .fillMaxWidth()
+            .padding(top = 14.dp)
         ) {
             Button(
-                modifier = Modifier.fillMaxWidth().height(50.dp),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(50.dp),
                 onClick = onClick,
+                enabled = userUIState.isEntryValid,
                 shape = MaterialTheme.shapes.small,
                 colors = ButtonDefaults.buttonColors(
                     containerColor = TracktPurple2,
@@ -258,11 +283,15 @@ fun SignupOther( onClick: () -> Unit,
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Row( modifier = Modifier.fillMaxWidth().padding(top = 16.dp)
+        Row( modifier = Modifier
+            .fillMaxWidth()
+            .padding(top = 16.dp)
         ) {
             Divider(color = TracktPurple3)
         }
-        Row( modifier = Modifier.fillMaxWidth().padding(top = 12.dp), horizontalArrangement = Arrangement.Center
+        Row( modifier = Modifier
+            .fillMaxWidth()
+            .padding(top = 12.dp), horizontalArrangement = Arrangement.Center
         ) {
             Button(
                 modifier = Modifier.size(240.dp, 40.dp),
@@ -282,7 +311,9 @@ fun SignupOther( onClick: () -> Unit,
                     textAlign = TextAlign.Center)
             }
         }
-        Row( modifier = Modifier.fillMaxWidth().padding(top = 40.dp), horizontalArrangement = Arrangement.Center
+        Row( modifier = Modifier
+            .fillMaxWidth()
+            .padding(top = 40.dp), horizontalArrangement = Arrangement.Center
         ) {
             Text(
                 text = "Already have an account? Log in",

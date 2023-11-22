@@ -7,14 +7,13 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.OpenApi.Models;
 using System.Security.Claims;
 using System.IdentityModel.Tokens.Jwt;
-using CloudinaryDotNet;
-using Microsoft.Extensions.DependencyInjection;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 
 builder.Services.AddControllers();
+//builder.WebHost.UseUrls("10.65.10.97");
 builder.Services.Configure<ApiBehaviorOptions>(options => options.SuppressModelStateInvalidFilter = true);
 var cloudinaryCloudName = builder.Configuration["Cloudinary:CloudName"];
 var cloudinaryApiKey = builder.Configuration["Cloudinary:ApiKey"];
@@ -87,6 +86,20 @@ builder.Services.AddAuthentication(options =>
             { JwtRegisteredClaimNames.Sub, ClaimTypes.NameIdentifier }
         }
     });});
+builder.Services.AddCors(options => {
+    options.AddDefaultPolicy(cfg => {
+        cfg.WithOrigins(builder.Configuration["AllowedOrigins"]!);
+        cfg.AllowAnyHeader();
+        cfg.AllowAnyMethod();
+    });
+    options.AddPolicy(name: "AnyOrigin",
+    cfg => {
+        cfg.AllowAnyOrigin();
+        cfg.AllowAnyHeader();
+        cfg.AllowAnyMethod();
+    });
+});
+
 
 var app = builder.Build();
 
@@ -98,9 +111,10 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-
 app.UseRouting();
 app.UseStaticFiles();
+
+app.UseCors("AnyOrigin");
 
 app.UseAuthentication();
 app.UseAuthorization();
