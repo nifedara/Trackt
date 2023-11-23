@@ -115,19 +115,21 @@ namespace webapi.Controllers
                 {
                     //destination by id
                     var destination = _context!.Destinations.Where(u => u.UserId == userId && u.DestinationId == destinationId);
-                    if (destination != null)
-                        return Ok(await destination.ToListAsync());
-                    else
-                        return StatusCode(StatusCodes.Status404NotFound);
+                    return Ok(await destination.ToListAsync());
+                    //if (destination != null)
+                    //    return Ok(await destination.ToListAsync());
+                    //else
+                    //    return StatusCode(StatusCodes.Status404NotFound);
                 }
                 else
                 {
                     //all destinations
                     var destinations = _context!.Destinations.Where(u => u.UserId == userId);
-                    if (destinations == null || !await destinations.AnyAsync())
-                        return NotFound();
-                    else
-                        return Ok(await destinations.ToListAsync());
+                    return Ok(await destinations.ToListAsync());
+                    //if (destinations == null || !await destinations.AnyAsync())
+                    //    return NotFound();
+                    //else
+                    //    return Ok(await destinations.ToListAsync());
 
                 }
             }
