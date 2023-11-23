@@ -16,7 +16,7 @@ class  DestinationRepository {
     suspend fun createDestination(destination: Models.Destination, token: String) {
         apiService.createDestination(destination, "Bearer $token")    }
 
-    suspend fun getDestinations(token: String) : List<Models.Destination> {
+    fun getDestinations(token: String?) : Flow<List<Models.DestinationResponse>> {
         return apiService.getDestinations("Bearer $token")
     }
     suspend fun getDestination(num: Int, token: String) : Models.Destination {

@@ -9,14 +9,21 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.example.trackt.application.ApplicationContext
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
 class TracktViewModel(
     private val usersRepository: UsersRepository,
-    private val destinationRepository: DestinationRepository): ViewModel() {
+    destinationRepository: DestinationRepository): ViewModel() {
 
-    var userUIState by mutableStateOf(UserUIState())
+    var userUIState by mutableStateOf(UserUIState()) //for signup
     var loginUIState by mutableStateOf(LoginUIState()) //for login
+
+    private var yourToken: String? = null
+    //var name: String? = null
 
     private fun validateUserInput(uiState: UserFullDetails = userUIState.userDetails): Boolean {
         return with(uiState) {
@@ -44,7 +51,7 @@ class TracktViewModel(
             LoginUIState(userLoginDetails = userLoginDetails, isEntryValid = validateLoginInput(userLoginDetails))
     }
     fun getUser(context: Context){
-        val sessionManger: SessionManager = SessionManager(context)
+        val sessionManger = SessionManager(context)
         viewModelScope.launch {
             val token = usersRepository.getUser(loginUIState.userLoginDetails.toLogin())
 
@@ -52,13 +59,34 @@ class TracktViewModel(
 
             if (token.body()?.accessToken  != null) {
                 sessionManger.saveAuthToken(token.body()!!.accessToken)
+                //val theToken = sessionManger.fetchAuthToken()
+                val theToken = token.body()!!.accessToken
+                setToken(theToken)
+                Log.v("The token", "$theToken Here's your token")
             }
-
-
         }
     }
 
+//    private val sessionManager: SessionManager = SessionManager(sContext)
+//    private val yourToken = sessionManager.fetchAuthToken()
 
+    val travelsListUIState: StateFlow<TravelsUIState> =
+        destinationRepository.getDestinations(yourToken).map { TravelsUIState(it) }
+            .stateIn(
+                scope = viewModelScope,
+                started = SharingStarted.WhileSubscribed(TIMEOUT_MILLIS),
+                initialValue = TravelsUIState()
+            )
+    companion object{
+        private const val TIMEOUT_MILLIS = 5_000L
+    }
+
+    private fun setToken(token: String?){
+        yourToken = token
+    }
+    //private fun setName(yourName: String){
+      //  name = yourName
+    //}
 }
 
 data class UserUIState(
@@ -93,6 +121,10 @@ data class UserLoginDetails(
     )
 }
 
+data class TravelsUIState(
+    val travelsList: List<Models.DestinationResponse> = listOf()
+)
+
 object AppViewModelProvider {
 
     private lateinit var applicationContext: ApplicationContext
@@ -106,6 +138,7 @@ object AppViewModelProvider {
             override fun <T : ViewModel> create(modelClass: Class<T>): T {
                 val usersRepository = UsersRepository()
                 val destinationRepository = DestinationRepository()
+                //val context: Context = ApplicationContext()
                 if (modelClass.isAssignableFrom(TracktViewModel::class.java)) {
                     return TracktViewModel(usersRepository, destinationRepository) as T
                 }

@@ -17,7 +17,7 @@ class Models {
         val password: String
     )
     data class LoginResponse(
-        @SerializedName("acessToken") val accessToken: String
+        @SerializedName("accessToken") val accessToken: String
     )
     data class Destination(
         val image: Bitmap,
@@ -26,8 +26,9 @@ class Models {
         val date: DateTime,
     )
     data class DestinationResponse(
-        val image: String,
+        val destinationId: Int,
         val destination: String,
+        val image: String,
         val budget: Double,
         val date: DateTime,
     )

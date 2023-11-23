@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization;
 
 namespace webapi.Models
 {
@@ -8,7 +9,7 @@ namespace webapi.Models
     {
         public string? Name { get; set; }
 
-        // Navigation property for user's destinations
+        [JsonIgnore] // This attribute is used to prevent serialization loop
         public ICollection<Destination>? Destinations { get; set; }
     }
 }

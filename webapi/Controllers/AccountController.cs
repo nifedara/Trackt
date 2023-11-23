@@ -104,7 +104,9 @@ namespace webapi.Controllers
                         var jwtString = new JwtSecurityTokenHandler()
                             .WriteToken(jwtObject);
 
-                        return StatusCode(StatusCodes.Status200OK, jwtString);
+                        Token token = new() { AccessToken = jwtString };
+
+                        return Ok(token);
                     }
                 }
                 else
@@ -128,5 +130,10 @@ namespace webapi.Controllers
                 return StatusCode(StatusCodes.Status401Unauthorized, exceptionDetails);
             }
         }
+    }
+
+    public class Token
+    {
+        public string? AccessToken { get; set; }
     }
 }

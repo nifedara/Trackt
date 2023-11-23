@@ -2,8 +2,8 @@ package com.example.trackt.ui.screens
 
 import android.annotation.SuppressLint
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -12,6 +12,9 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardColors
@@ -25,6 +28,8 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -35,9 +40,12 @@ import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.navigation.NavHostController
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.trackt.R
 import com.example.trackt.TopBar
+import com.example.trackt.data.AppViewModelProvider
+import com.example.trackt.data.Models
+import com.example.trackt.data.TracktViewModel
 import com.example.trackt.ui.theme.Caudex
 import com.example.trackt.ui.theme.PurpleGrey40
 import com.example.trackt.ui.theme.TracktBlue1
@@ -48,8 +56,13 @@ import com.example.trackt.ui.theme.TracktWhite2
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
-fun TravelsScreen(navController: NavHostController,
+fun TravelsScreen(navigateToDestination: (Int) -> Unit,
+                  addDestination: () -> Unit,
+                  viewModel: TracktViewModel = viewModel(factory = AppViewModelProvider.createViewModelInstance() )
 ) {
+    val travelsUIState by viewModel.travelsListUIState.collectAsState()
+    //val profileName = viewModel.name
+
     Scaffold(
         topBar = {
             TopBar(
@@ -68,9 +81,9 @@ fun TravelsScreen(navController: NavHostController,
             Spacer(modifier = Modifier.height(20.dp))
             ProfileMessage()
             Spacer(modifier = Modifier.height(30.dp))
-            DestinationBody(hasContent = true){
-                navController.navigate(CreateDestinationScreen.route)
-            }
+            DestinationBody(destinationList = travelsUIState.travelsList,
+                            onDestinationClick = navigateToDestination,
+                            onClick = addDestination)
         }
     }
 }
@@ -102,7 +115,9 @@ fun ProfileMessage(
 }
 
 @Composable
-fun DestinationBody( hasContent: Boolean, onClick: () -> Unit,
+fun DestinationBody(destinationList: List<Models.DestinationResponse>,
+                    onDestinationClick: (Int) -> Unit,
+                    onClick: () -> Unit
 ) {
     Column(modifier = Modifier.fillMaxWidth()
     ) {
@@ -132,14 +147,15 @@ fun DestinationBody( hasContent: Boolean, onClick: () -> Unit,
                         colors = IconButtonDefaults.iconButtonColors(containerColor = TracktPurple3,
                             contentColor = TracktPurple11)
                     ) {
-                        Icon(painter = painterResource(id = R.drawable.plus), contentDescription = "add (description) button",
+                        Icon(painter = painterResource(id = R.drawable.plus), contentDescription = "add (destination) button",
                             modifier = Modifier.size(16.dp, 16.dp))
                     }
                 }
 
-                if (hasContent){
+                if (destinationList.isNotEmpty()){
                     Spacer(modifier = Modifier.height(26.dp))
-                    Destination()
+                    DestinationList(destinationList = destinationList,
+                        onClick = {onDestinationClick(it.destinationId)})
                 } else{
                     Row(Modifier.fillMaxSize(), horizontalArrangement = Arrangement.Center,
                         verticalAlignment = Alignment.CenterVertically) {
@@ -155,55 +171,41 @@ fun DestinationBody( hasContent: Boolean, onClick: () -> Unit,
 }
 
 @Composable
-fun Destination(){
-    Row(modifier = Modifier.fillMaxWidth()) {
-        Card(modifier = Modifier.size(150.dp, 190.dp),
-            shape = MaterialTheme.shapes.small,
-            colors = CardDefaults.cardColors(containerColor = TracktGray1) ,
-            elevation = CardDefaults.cardElevation(4.dp)) {
-            Column(modifier = Modifier.fillMaxWidth()) {
-                Image(
-                    painter = painterResource(id = R.drawable.img1),
-                    contentDescription = "location image",
-                    contentScale = ContentScale.Crop,
-                    modifier = Modifier
-                        .padding(5.dp, 5.dp, 5.dp, 0.dp)
-                        .size(140.dp)
-                        .clip(RoundedCornerShape(8.dp))
-                )
-                Spacer(modifier = Modifier.height(4.dp))
-                TextButton(onClick = { /*TODO*/ }) {
-                    Text(text = "Ibadan",
-                        fontFamily = Caudex,
-                        fontSize = 16.sp,
-                        textAlign = TextAlign.Center,
-                        color = TracktBlue1)
-                }
-            }
+fun DestinationList(destinationList: List<Models.DestinationResponse>,
+                    onClick: (Models.DestinationResponse) -> Unit
+){
+    LazyVerticalGrid(columns = GridCells.Fixed(2)){
+        items(items = destinationList, key = {it.destinationId}){destination ->
+            DestinationCard(cardContent = destination,
+                modifier = Modifier.clickable { onClick(destination) })
         }
-        Spacer(modifier = Modifier.weight(1f))
-        Card(modifier = Modifier.size(150.dp, 190.dp),
-            shape = MaterialTheme.shapes.small,
-            colors = CardDefaults.cardColors(containerColor = TracktGray1) ,
-            elevation = CardDefaults.cardElevation(4.dp)) {
-            Column(modifier = Modifier.fillMaxWidth()) {
-                Image(
-                    painter = painterResource(id = R.drawable.img2),
-                    contentDescription = "location image",
-                    contentScale = ContentScale.Crop,
-                    modifier = Modifier
-                        .padding(5.dp, 5.dp, 5.dp, 0.dp)
-                        .size(140.dp)
-                        .clip(RoundedCornerShape(8.dp))
-                )
-                Spacer(modifier = Modifier.height(4.dp))
-                TextButton(onClick = { /*TODO*/ }) {
-                    Text(text = "Lagos",
-                        fontFamily = Caudex,
-                        fontSize = 16.sp,
-                        textAlign = TextAlign.Center,
-                        color = TracktBlue1)
-                }
+    }
+}
+
+@Composable
+fun DestinationCard(cardContent: Models.DestinationResponse,
+                    modifier: Modifier = Modifier){
+    Card(modifier = Modifier.size(150.dp, 190.dp),
+        shape = MaterialTheme.shapes.small,
+        colors = CardDefaults.cardColors(containerColor = TracktGray1) ,
+        elevation = CardDefaults.cardElevation(4.dp)) {
+        Column(modifier = Modifier.fillMaxWidth()) {
+            Image(
+                painter = painterResource(id = R.drawable.img1),
+                contentDescription = "location image",
+                contentScale = ContentScale.Crop,
+                modifier = Modifier
+                    .padding(5.dp, 5.dp, 5.dp, 0.dp)
+                    .size(140.dp)
+                    .clip(RoundedCornerShape(8.dp))
+            )
+            Spacer(modifier = Modifier.height(4.dp))
+            TextButton(onClick = { /*TODO*/ }) {
+                Text(text = cardContent.destination,
+                    fontFamily = Caudex,
+                    fontSize = 16.sp,
+                    textAlign = TextAlign.Center,
+                    color = TracktBlue1)
             }
         }
     }

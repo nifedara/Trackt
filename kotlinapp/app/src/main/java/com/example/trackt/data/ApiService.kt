@@ -1,11 +1,9 @@
 package com.example.trackt.data
 
-import android.view.Display.Mode
-import com.google.rpc.context.AttributeContext.Response
+import kotlinx.coroutines.flow.Flow
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.http.Body
-import retrofit2.http.Field
 import retrofit2.http.GET
 import retrofit2.http.Header
 import retrofit2.http.POST
@@ -24,7 +22,7 @@ interface ApiService {
     suspend fun createDestination(@Body destination: Models.Destination, @Header("Authorization") token: String)
 
     @GET("Destinations/Get")
-    suspend fun getDestinations(@Header("Authorization") token: String): List<Models.Destination>
+    fun getDestinations(@Header("Authorization") token: String): Flow<List<Models.DestinationResponse>>
 
     @GET("Destinations/Get?destinationId={num}")
     suspend fun getDestination(@Path("num") num: Int, @Header("Authorization")token: String): Models.Destination

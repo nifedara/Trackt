@@ -9,20 +9,26 @@ namespace webapi.Models
     public class Destination
     {
         [Key]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)] // Use this for PostgreSQL serial
         public int DestinationId { get; set; }
+
         [Required]
         public string? DestinationName { get; set; }
+
         [Required]
         public string? ImageUrl { get; set; }
+
         [Required]
-        [Precision(10, 2)]
+        [Column(TypeName = "numeric(10,2)")]
         public decimal Budget { get; set; }
+
         [Required]
         public DateTime Date { get; set; }
+
         [Required]
         public string? UserId { get; set; }
 
-        // Navigation property for the user
+        [JsonIgnore] // This attribute is used to prevent serialization loop
         public TracktUser? User { get; set; }
     }
 }
