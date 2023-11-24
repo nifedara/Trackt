@@ -8,7 +8,7 @@ using System.Security.Claims;
 
 namespace webapi.Controllers
 {
-    [Route("[controller]/[action]")]
+    [Route("api/[controller]/[action]")]
     [ApiController]
     public class AccountController : ControllerBase
     {
@@ -132,13 +132,21 @@ namespace webapi.Controllers
                         var jwtString = new JwtSecurityTokenHandler()
                             .WriteToken(jwtObject);
 
-                        Token token = new() { AccessToken = jwtString };//jwtString - userToken
+                        var token = jwtString;
+                        UserInfo userInfo = new()
+                        {
+                            Name = user.Name,
+                            Email = user.Email,
+                        };
 
                         var response = new BaseResponse
                         {
                             Status = !invalid,
                             Message = "Successfully authenticated.",
-                            Data = jwtString
+                            Data = new
+                            {
+                                token, userInfo
+                            }
                         };
                         return response;
 
@@ -174,9 +182,9 @@ namespace webapi.Controllers
             }
         }
     }
-
-    public class Token
+    public class UserInfo
     {
-        public string? AccessToken { get; set; }
+        public string? Name { get; set; }
+        public string? Email { get; set; }
     }
 }

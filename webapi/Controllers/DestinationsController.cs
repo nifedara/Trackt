@@ -11,7 +11,7 @@ using webapi.Models;
 namespace webapi.Controllers
 {
     [Authorize] // This attribute ensures that only authenticated users can access these endpoints
-    [Route("[controller]")]
+    [Route("api/[controller]/[action]")]
     [ApiController]
     public class DestinationsController : ControllerBase
     {
@@ -28,7 +28,6 @@ namespace webapi.Controllers
         }
 
         [HttpPost]
-        [Route("Create")]
         public async Task<ActionResult> Create([FromForm] DestinationDTO input)
         {
             try
@@ -102,8 +101,7 @@ namespace webapi.Controllers
             
         }
 
-        [HttpPost]
-        [Route("Get")]
+        [HttpGet]
         public async Task<ActionResult> Get(int? destinationId)
         {
             try
