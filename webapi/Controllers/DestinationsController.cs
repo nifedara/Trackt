@@ -130,8 +130,8 @@ namespace webapi.Controllers
                     {
                         var response = new BaseResponse
                         {
-                            Status = valid,
-                            Message = "Destinations...",
+                            Status = true,
+                            Message = "Destination...",
                             Data = await destination!.ToListAsync()
                         };
                         return response;
@@ -141,7 +141,7 @@ namespace webapi.Controllers
                     {
                         var response = new BaseResponse
                         {
-                            Status = valid,
+                            Status = true,
                             Message = StatusCodes.Status404NotFound.ToString(),
                             Data = await destination!.ToListAsync()
                         };
@@ -153,9 +153,26 @@ namespace webapi.Controllers
                     //all destinations
                     var destinations = _context!.Destinations.Where(u => u.UserId == userId);
                    if (destinations == null || !await destinations.AnyAsync())
-                       return NotFound();
+                    {
+                        var response = new BaseResponse
+                        {
+                            Status = true,
+                            Message = StatusCodes.Status404NotFound.ToString(),
+                            Data = await destinations!.ToListAsync()
+                        };
+                        return response;
+                    }
                    else
-                       return Ok(await destinations.ToListAsync());
+                    {
+                        var response = new BaseResponse
+                        {
+                            Status = true,
+                            Message = "Destinations...",
+                            Data = await destinations!.ToListAsync()
+                        };
+                        return response;
+                        //return Ok(await destinations.ToListAsync());
+                    }
 
                 }
             }
