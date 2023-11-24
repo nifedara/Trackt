@@ -1,4 +1,4 @@
-﻿namespace webapi.ViewModel
+﻿namespace webapi
 {
     public class BaseResponse
     {

@@ -28,7 +28,7 @@ namespace webapi.Controllers
 
         [HttpPost]
         //[ResponseCache(CacheProfileName = "NoCache")] --- Fix your caching //TODO
-        public async Task<ActionResult> Create(CreateAccountDTO input)
+        public async Task<ActionResult<BaseResponse>> Create(CreateAccountDTO input)
         {
             try
             {
@@ -43,11 +43,23 @@ namespace webapi.Controllers
                     var result = await _userManager!.CreateAsync(newUser, input.Password!);
                     if (result.Succeeded)
                     {
-                        //log later //TODO
-                        return StatusCode(201, $"User '{newUser.Name}' has been created.");
+                        var response = new BaseResponse
+                        {
+                            Status = result.Succeeded,
+                            Message = $"User '{newUser.Name}' has been created."
+                        }; //log later //TODO
+                        return response;
                     }
                     else
-                        throw new Exception(string.Format("Error: {0}", string.Join(", ", result.Errors.Select(e => e.Description))));
+                    {
+                        var response = new BaseResponse
+                        {
+                            Status = result.Succeeded,
+                            Message = $"User '{newUser.Name}' has been created."
+                        };
+                        return response;
+                        //log later //TODO. throw new Exception(string.Format("Error: {0}", string.Join(", ", result.Errors.Select(e => e.Description))));
+                    }
                 }
                 else
                 {
