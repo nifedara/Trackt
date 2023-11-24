@@ -1,8 +1,11 @@
 import { Button, Card, CardBody, FormControl, FormErrorMessage, FormLabel, Heading, Input, Text, VStack } from '@chakra-ui/react'
 import { Field, Form, Formik } from 'formik'
 import React from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import * as Yup from "yup"
+import { fetchJSON } from '../helpers/api'
+import { toast } from './Toast'
+import { useAuth } from '../helpers/useAuth'
 
 const loginFormValidation = Yup.object().shape({
     email: Yup.string().email("Invalid email").required("Please enter your email!"),
@@ -10,18 +13,44 @@ const loginFormValidation = Yup.object().shape({
 })
 
 export const LoginForm = () => {
+    const { dispatch } = useAuth()
+    const navigate = useNavigate()
+
+
+    const loginFunction = (values) => {
+        return fetchJSON("/Account/Login", values, "POST")
+    }
+
     return (
         <Card w={{ md: "70%" }} size={"lg"} zIndex={"9999"}>
             <CardBody>
-                <Heading fontSize={"2xl"} mb={3} textAlign={"center"}>Create Your account</Heading>
+                <Heading fontSize={"2xl"} mb={3} textAlign={"center"}>Login to Your account</Heading>
                 <Formik
                     initialValues={{ email: "", password: "" }}
                     validationSchema={loginFormValidation}
                     onSubmit={(values, actions) => {
-                        setTimeout(() => {
-                            alert(JSON.stringify(values, null, 2))
+                        actions.setSubmitting(true)
+                        loginFunction(values).then((data) => {
+                            toast({
+                                status: "success",
+                                title: "Successfully logged in!",
+                            })
+                            dispatch({
+                                type: "set_Token",
+                                payload: data.data.token
+                            })
+                            dispatch({
+                                type: "set_user",
+                                payload: data.data.user
+                            })
                             actions.setSubmitting(false)
-                        }, 1000)
+                            navigate("/destinations")
+                        }).catch(() => {
+                            toast({
+                                status: "error",
+                                title: "Failed to login"
+                            })
+                        })
                     }}
                 >
                     {(props) => (
@@ -58,6 +87,6 @@ export const LoginForm = () => {
                     )}
                 </Formik>
             </CardBody>
-        </Card>
+        </Card >
     )
 }
