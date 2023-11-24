@@ -11,7 +11,7 @@ using webapi.Models;
 namespace webapi.Controllers
 {
     [Authorize] // This attribute ensures that only authenticated users can access these endpoints
-    [Route("[controller]")]
+    [Route("api/[controller]/[action]")]
     [ApiController]
     public class DestinationsController : ControllerBase
     {
@@ -28,7 +28,6 @@ namespace webapi.Controllers
         }
 
         [HttpPost]
-        [Route("Create")]
         public async Task<ActionResult> Create([FromForm] DestinationDTO input)
         {
             try
@@ -102,8 +101,7 @@ namespace webapi.Controllers
             
         }
 
-        [HttpPost]
-        [Route("Get")]
+        [HttpGet]
         public async Task<ActionResult> Get(int? destinationId)
         {
             try
@@ -115,19 +113,21 @@ namespace webapi.Controllers
                 {
                     //destination by id
                     var destination = _context!.Destinations.Where(u => u.UserId == userId && u.DestinationId == destinationId);
-                    if (destination != null)
-                        return Ok(await destination.ToListAsync());
-                    else
-                        return StatusCode(StatusCodes.Status404NotFound);
+                    return Ok(await destination.ToListAsync());
+                    //if (destination != null)
+                    //    return Ok(await destination.ToListAsync());
+                    //else
+                    //    return StatusCode(StatusCodes.Status404NotFound);
                 }
                 else
                 {
                     //all destinations
                     var destinations = _context!.Destinations.Where(u => u.UserId == userId);
-                    if (destinations == null || !await destinations.AnyAsync())
-                        return NotFound();
-                    else
-                        return Ok(await destinations.ToListAsync());
+                    return Ok(await destinations.ToListAsync());
+                    //if (destinations == null || !await destinations.AnyAsync())
+                    //    return NotFound();
+                    //else
+                    //    return Ok(await destinations.ToListAsync());
 
                 }
             }
