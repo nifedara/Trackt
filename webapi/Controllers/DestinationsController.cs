@@ -28,15 +28,15 @@ namespace webapi.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult> Create([FromForm] DestinationDTO input)
+        public async Task<ActionResult<BaseResponse>> Create([FromForm] DestinationDTO input)
         {
             try
             {
                 var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
                 var user = await _userManager!.FindByIdAsync(userId!);
 
-
-                if (user != null && ModelState.IsValid)
+                var valid = user != null && ModelState.IsValid;
+                if (valid)
                 {
                     // get the uploaded image
                     var imgfile = input.Image;
@@ -72,11 +72,16 @@ namespace webapi.Controllers
                         UserId = userId,
                         User = user
                     };
-
                     _context?.Destinations.Add(newDestination);
-
                     await _context!.SaveChangesAsync();
-                    return StatusCode(201, $"Destination '{input.DestinationName}' has been created.");
+
+                    var response = new BaseResponse
+                    {
+                        Status = valid,
+                        Message = $"Destination '{input.DestinationName}' has been created."
+                    };
+                    return response;
+                    //return StatusCode(201, $"Destination '{input.DestinationName}' has been created.");
                 }
                 else
                 {
@@ -85,7 +90,13 @@ namespace webapi.Controllers
                         Type = "https://tools.ietf.org/html/rfc7231#section-6.5.1",
                         Status = StatusCodes.Status400BadRequest
                     };
-                    return new BadRequestObjectResult(details);
+                    var response = new BaseResponse
+                    {
+                        Status = valid,
+                        Message = details.Detail
+                    };
+                    return response;
+                    //return new BadRequestObjectResult(details);
                 }
             }
             catch (Exception ex) 
@@ -102,32 +113,49 @@ namespace webapi.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult> Get(int? destinationId)
+        public async Task<ActionResult<BaseResponse>> Get(int? destinationId)
         {
             try
             {
                 //userId
                 var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+                var hasId = destinationId.HasValue;
 
-                if (destinationId.HasValue)
+                if (hasId)
                 {
                     //destination by id
                     var destination = _context!.Destinations.Where(u => u.UserId == userId && u.DestinationId == destinationId);
-                    return Ok(await destination.ToListAsync());
-                    //if (destination != null)
-                    //    return Ok(await destination.ToListAsync());
-                    //else
-                    //    return StatusCode(StatusCodes.Status404NotFound);
+                    var valid = destination != null;
+                    if (valid)
+                    {
+                        var response = new BaseResponse
+                        {
+                            Status = valid,
+                            Message = "Destinations...",
+                            Data = await destination!.ToListAsync()
+                        };
+                        return response;
+                        //return Ok(await destination.ToListAsync());
+                    }
+                    else
+                    {
+                        var response = new BaseResponse
+                        {
+                            Status = valid,
+                            Message = StatusCodes.Status404NotFound.ToString(),
+                            Data = await destination!.ToListAsync()
+                        };
+                        return response;
+                    }
                 }
                 else
                 {
                     //all destinations
                     var destinations = _context!.Destinations.Where(u => u.UserId == userId);
-                    return Ok(await destinations.ToListAsync());
-                    //if (destinations == null || !await destinations.AnyAsync())
-                    //    return NotFound();
-                    //else
-                    //    return Ok(await destinations.ToListAsync());
+                   if (destinations == null || !await destinations.AnyAsync())
+                       return NotFound();
+                   else
+                       return Ok(await destinations.ToListAsync());
 
                 }
             }

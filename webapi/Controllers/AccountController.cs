@@ -45,7 +45,7 @@ namespace webapi.Controllers
                     {
                         var response = new BaseResponse
                         {
-                            Status = result.Succeeded,
+                            Status = true,
                             Message = $"User '{newUser.Name}' has been created."
                         };
                         return response;
@@ -54,7 +54,7 @@ namespace webapi.Controllers
                     {
                         var response = new BaseResponse
                         {
-                            Status = result.Succeeded,
+                            Status =false,
                             Message = string.Format("Error: {0}", string.Join(", ", result.Errors.Select(e => e.Description)))
                         };
                         return response;
@@ -72,7 +72,7 @@ namespace webapi.Controllers
 
                     var response = new BaseResponse
                     {
-                        Status = ModelState.IsValid,
+                        Status = false,
                         Message = details.Detail
                     };
                     return response;
@@ -106,7 +106,7 @@ namespace webapi.Controllers
                     {
                         var response = new BaseResponse
                         {
-                            Status = invalid,
+                            Status = false,
                             Message = "Invalid login attempt."
                         };
                         return response;
@@ -141,7 +141,7 @@ namespace webapi.Controllers
 
                         var response = new BaseResponse
                         {
-                            Status = !invalid,
+                            Status = true,
                             Message = "Successfully authenticated.",
                             Data = new
                             {
@@ -164,7 +164,7 @@ namespace webapi.Controllers
 
                     var response = new BaseResponse
                     {
-                        Status = ModelState.IsValid,
+                        Status = false,
                         Message = details.Detail
                     };
                     return response;
