@@ -47,7 +47,7 @@ namespace webapi.Controllers
                         {
                             Status = result.Succeeded,
                             Message = $"User '{newUser.Name}' has been created."
-                        }; //log later //TODO
+                        };
                         return response;
                     }
                     else
@@ -55,7 +55,7 @@ namespace webapi.Controllers
                         var response = new BaseResponse
                         {
                             Status = result.Succeeded,
-                            Message = $"User '{newUser.Name}' has been created."
+                            Message = string.Format("Error: {0}", string.Join(", ", result.Errors.Select(e => e.Description)))
                         };
                         return response;
                         //log later //TODO. throw new Exception(string.Format("Error: {0}", string.Join(", ", result.Errors.Select(e => e.Description))));
@@ -68,7 +68,14 @@ namespace webapi.Controllers
                         Type = "https://tools.ietf.org/html/rfc7231#section-6.5.1",
                         Status = StatusCodes.Status400BadRequest
                     };
-                    return new BadRequestObjectResult(details);
+                    //return new BadRequestObjectResult(details);
+
+                    var response = new BaseResponse
+                    {
+                        Status = ModelState.IsValid,
+                        Message = details.Detail
+                    };
+                    return response;
 
                 }
             }
@@ -86,16 +93,25 @@ namespace webapi.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult> Login(LoginDTO input)
+        public async Task<ActionResult<BaseResponse>> Login(LoginDTO input)
         {
             try
             {
                 if (ModelState.IsValid)
                 {
                     var user = await _userManager!.FindByEmailAsync(input.Email!);
+                    var invalid = user == null || !await _userManager.CheckPasswordAsync(user, input.Password!);
 
-                    if (user == null || !await _userManager.CheckPasswordAsync(user, input.Password!))
-                    { throw new Exception("Invalid login attempt."); }
+                    if (invalid)
+                    {
+                        var response = new BaseResponse
+                        {
+                            Status = invalid,
+                            Message = "Invalid login attempt."
+                        };
+                        return response;
+                    }
+                    //throw new Exception("Invalid login attempt."); }
                     else
                     {
                         var loginCredentials = new SigningCredentials(
@@ -104,21 +120,29 @@ namespace webapi.Controllers
                                 SecurityAlgorithms.HmacSha256);
 
                         var claims = new List<Claim>
-                    { new Claim(ClaimTypes.NameIdentifier, user.Id) };
+                    { new Claim(ClaimTypes.NameIdentifier, user!.Id) };
 
                         var jwtObject = new JwtSecurityToken(
                             issuer: _configuration["JWT:Issuer"],
                             audience: _configuration["JWT:Audience"],
                             claims: claims,
-                            expires: DateTime.Now.AddSeconds(300),
+                            expires: DateTime.Now.AddSeconds(3600),
                             signingCredentials: loginCredentials);
 
                         var jwtString = new JwtSecurityTokenHandler()
                             .WriteToken(jwtObject);
 
-                        Token token = new() { AccessToken = jwtString };
+                        Token token = new() { AccessToken = jwtString };//jwtString - userToken
 
-                        return Ok(token);
+                        var response = new BaseResponse
+                        {
+                            Status = !invalid,
+                            Message = "Successfully authenticated.",
+                            Data = jwtString
+                        };
+                        return response;
+
+                        //return Ok(token);
                     }
                 }
                 else
@@ -128,7 +152,14 @@ namespace webapi.Controllers
                         Type = "https://tools.ietf.org/html/rfc7231#section-6.5.1",
                         Status = StatusCodes.Status400BadRequest
                     };
-                    return new BadRequestObjectResult(details);
+                    //return new BadRequestObjectResult(details);
+
+                    var response = new BaseResponse
+                    {
+                        Status = ModelState.IsValid,
+                        Message = details.Detail
+                    };
+                    return response;
                 }
             }
             catch (Exception ex)
