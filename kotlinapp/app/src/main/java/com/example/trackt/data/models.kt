@@ -12,7 +12,7 @@ class Models {
         val password: String,
     )
 
-    data class UserLogin(
+    data class Login(
         val email: String,
         val password: String
     )
@@ -21,7 +21,7 @@ class Models {
     )
     data class Destination(
         val image: Bitmap,
-        val destination: String,
+        val destinationName: String,
         val budget: Double,
         val date: DateTime,
     )
@@ -31,5 +31,10 @@ class Models {
         val image: String,
         val budget: Double,
         val date: DateTime,
+    )
+    data class Response(
+        val status: Boolean,
+        val message: String,
+        val data: String,
     )
 }

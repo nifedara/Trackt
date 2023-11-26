@@ -54,8 +54,8 @@ namespace webapi.Controllers
                     {
                         var response = new BaseResponse
                         {
-                            Status =false,
-                            Message = string.Format("Error: {0}", string.Join(", ", result.Errors.Select(e => e.Description)))
+                            Status = false,
+                            Message = result.Errors.Select(e => e.Description).ToString()
                         };
                         return response;
                         //log later //TODO. throw new Exception(string.Format("Error: {0}", string.Join(", ", result.Errors.Select(e => e.Description))));
@@ -63,17 +63,17 @@ namespace webapi.Controllers
                 }
                 else
                 {
-                    var details = new ValidationProblemDetails(ModelState)
-                    {
-                        Type = "https://tools.ietf.org/html/rfc7231#section-6.5.1",
-                        Status = StatusCodes.Status400BadRequest
-                    };
+                    var details = new ValidationProblemDetails(ModelState);
+                    //{
+                    //    Type = "https://tools.ietf.org/html/rfc7231#section-6.5.1",
+                    //    Status = StatusCodes.Status400BadRequest
+                    //};
                     //return new BadRequestObjectResult(details);
 
                     var response = new BaseResponse
                     {
                         Status = false,
-                        Message = details.Detail
+                        Message = details.Detail?.ToString()
                     };
                     return response;
 

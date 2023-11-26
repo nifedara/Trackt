@@ -48,7 +48,7 @@ import com.example.trackt.TopBar
 import com.example.trackt.data.AppViewModelProvider
 import com.example.trackt.data.TracktViewModel
 import com.example.trackt.data.UserFullDetails
-import com.example.trackt.data.UserUIState
+import com.example.trackt.data.SignupUIState
 import com.example.trackt.ui.navigation.NavigationDestination
 import com.example.trackt.ui.theme.Caudex
 import com.example.trackt.ui.theme.TracktGray1
@@ -110,7 +110,7 @@ fun SignupScreen(navController: NavHostController,
                                 .padding(18.dp),
                             verticalArrangement = Arrangement.Center
                         ){
-                            SignupForm(userUIState = viewModel.userUIState,
+                            SignupForm(userUIState = viewModel.signupUIState,
                                 onValueChange = viewModel::updateUiState) {
                                 viewModel.createUser()
                                 navController.popBackStack()
@@ -129,9 +129,9 @@ fun SignupScreen(navController: NavHostController,
 }
 
 @Composable
-fun SignupForm( userUIState: UserUIState,
-                onValueChange: (UserFullDetails) -> Unit = {},
-                onClick: () -> Unit
+fun SignupForm(userUIState: SignupUIState,
+               onValueChange: (UserFullDetails) -> Unit = {},
+               onClick: () -> Unit
 ) {
     Column(
         modifier = Modifier

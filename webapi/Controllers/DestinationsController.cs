@@ -40,48 +40,62 @@ namespace webapi.Controllers
                 {
                     // get the uploaded image
                     var imgfile = input.Image;
+                    //check that it is an image
+                    var anImage = imgfile!.ContentType.StartsWith("image");
 
-                    // Cloudinary
-                    var cloudinaryCloudName = _configuration!["Cloudinary:CloudName"];
-                    var cloudinaryApiKey = _configuration["Cloudinary:ApiKey"];
-                    var cloudinaryApiSecret = _configuration["Cloudinary:ApiSecret"];
-
-                    // Handle image upload to Cloudinary
-                    Account account = new(
-                        cloudinaryCloudName,
-                        cloudinaryApiKey,
-                        cloudinaryApiSecret);
-                    Cloudinary cloudinary = new(account);
-
-                    //uploader
-                    var uploadParams = new ImageUploadParams()
+                    if (anImage)
                     {
-                        File = new FileDescription(imgfile!.FileName, imgfile.OpenReadStream()),
-                        PublicId = $"{input.DestinationName}_{Guid.NewGuid()}", //destination_uniqueId
-                    };
-                    var uploadImage = cloudinary.Upload(uploadParams);
+                        // Cloudinary
+                        var cloudinaryCloudName = _configuration!["Cloudinary:CloudName"];
+                        var cloudinaryApiKey = _configuration["Cloudinary:ApiKey"];
+                        var cloudinaryApiSecret = _configuration["Cloudinary:ApiSecret"];
+
+                        // Handle image upload to Cloudinary
+                        Account account = new(
+                            cloudinaryCloudName,
+                            cloudinaryApiKey,
+                            cloudinaryApiSecret);
+                        Cloudinary cloudinary = new(account);
+
+                        //uploader
+                        var uploadParams = new ImageUploadParams()
+                        {
+                            File = new FileDescription(imgfile!.FileName, imgfile.OpenReadStream()),
+                            PublicId = $"{input.DestinationName}_{Guid.NewGuid()}", //destination_uniqueId
+                        };
+                        var uploadImage = cloudinary.Upload(uploadParams);
 
 
-                    //new destination
-                    var newDestination = new Destination
+                        //new destination
+                        var newDestination = new Destination
+                        {
+                            DestinationName = input.DestinationName,
+                            ImageUrl = uploadImage.SecureUrl.ToString(), // Use SecureUri for HTTPS URL
+                            Budget = input.Budget,
+                            Date = input.Date,
+                            UserId = userId,
+                            User = user
+                        };
+                        _context?.Destinations.Add(newDestination);
+                        await _context!.SaveChangesAsync();
+
+                        var response = new BaseResponse
+                        {
+                            Status = true,
+                            Message = $"Destination '{input.DestinationName}' has been created."
+                        };
+                        return response;
+                        //return StatusCode(201, $"Destination '{input.DestinationName}' has been created.");
+                    }
+                    else
                     {
-                        DestinationName = input.DestinationName,
-                        ImageUrl = uploadImage.SecureUrl.ToString(), // Use SecureUri for HTTPS URL
-                        Budget = input.Budget,
-                        Date = input.Date,
-                        UserId = userId,
-                        User = user
-                    };
-                    _context?.Destinations.Add(newDestination);
-                    await _context!.SaveChangesAsync();
-
-                    var response = new BaseResponse
-                    {
-                        Status = valid,
-                        Message = $"Destination '{input.DestinationName}' has been created."
-                    };
-                    return response;
-                    //return StatusCode(201, $"Destination '{input.DestinationName}' has been created.");
+                        var response = new BaseResponse
+                        {
+                            Status = false,
+                            Message = "Invalid file type. Please upload an image."
+                        };
+                        return response;
+                    }
                 }
                 else
                 {

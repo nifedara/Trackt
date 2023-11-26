@@ -19,25 +19,25 @@ class TracktViewModel(
     private val usersRepository: UsersRepository,
     destinationRepository: DestinationRepository): ViewModel() {
 
-    var userUIState by mutableStateOf(UserUIState()) //for signup
+    var signupUIState by mutableStateOf(SignupUIState()) //for signup
     var loginUIState by mutableStateOf(LoginUIState()) //for login
 
     private var yourToken: String? = null
     //var name: String? = null
 
-    private fun validateUserInput(uiState: UserFullDetails = userUIState.userDetails): Boolean {
+    private fun validateUserInput(uiState: UserFullDetails = signupUIState.userDetails): Boolean {
         return with(uiState) {
             name.isNotBlank() && email.isNotBlank()  && password.isNotBlank() && confirmPassword.isNotBlank()
                     && password == confirmPassword
         }
     }
     fun updateUiState(userDetails: UserFullDetails) {
-        userUIState =
-            UserUIState(userDetails = userDetails, isEntryValid = validateUserInput(userDetails))
+        signupUIState =
+            SignupUIState(userDetails = userDetails, isEntryValid = validateUserInput(userDetails))
     }
     fun createUser() {
         viewModelScope.launch {
-            usersRepository.createUser(userUIState.userDetails.toUser())
+            usersRepository.createUser(signupUIState.userDetails.toUser())
         }
     }
 
@@ -89,7 +89,7 @@ class TracktViewModel(
     //}
 }
 
-data class UserUIState(
+data class SignupUIState(
     val userDetails: UserFullDetails = UserFullDetails(),
     var isEntryValid : Boolean = false
 )

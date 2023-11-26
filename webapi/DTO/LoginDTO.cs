@@ -4,10 +4,10 @@ namespace webapi.DTO
 {
     public class LoginDTO
     {
-        [Required]
+        [Required(ErrorMessage = "{0} is required")]
         [EmailAddress]
         public string? Email { get; set; }
-        [Required]
+        [Required(ErrorMessage = "{0} is required")]
         public string? Password { get; set; }
     }
 }
