@@ -1,6 +1,7 @@
 package com.example.trackt.ui.screens
 
 import android.annotation.SuppressLint
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -28,6 +29,8 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -41,10 +44,8 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.example.trackt.R
 import com.example.trackt.TopBar
-import com.example.trackt.application.ApplicationContext
 import com.example.trackt.data.AppViewModelProvider
 import com.example.trackt.data.LoginUIState
-import com.example.trackt.data.SessionManager
 import com.example.trackt.data.TracktViewModel
 import com.example.trackt.data.UserLoginDetails
 import com.example.trackt.ui.navigation.Graph
@@ -66,8 +67,10 @@ fun LoginScreen(navController: NavHostController,
                 viewModel: TracktViewModel = viewModel(factory = AppViewModelProvider.createViewModelInstance())
 ) {
     val context = LocalContext.current
+    val loginStatus by viewModel.status.collectAsState()
+    //val status = viewModel.yourStatus
 
-    val auth: SessionManager = SessionManager(context)
+    //val auth: SessionManager = SessionManager(context)
 
     Scaffold(
         topBar = {
@@ -112,13 +115,22 @@ fun LoginScreen(navController: NavHostController,
                             verticalArrangement = Arrangement.Center
                         ){
                             LoginForm(loginUIState = viewModel.loginUIState,
-                                      onValueChange = viewModel::updateLoginUiState){
-                                viewModel.getUser(context)
-                                if (auth.fetchAuthToken() != null){
-                                    navController.popBackStack()
-                                    navController.navigate(Graph.HOME)
-                                }
-                            }
+                                      onValueChange = viewModel::updateLoginUiState,
+                                      onClick = { viewModel.getUser(context) },
+                                      status = loginStatus,
+                                      navController = navController,
+                                      viewModel = viewModel
+                                )
+//                            {
+//                                viewModel.getUser(context)
+//                                Log.v("api status", loginStatus.toString())
+//                                if (loginStatus) {
+//                                    //run { viewModel::updateLoginUiState }
+//                                    Log.v("api status", loginStatus.toString() )
+//                                    navController.popBackStack()
+//                                    navController.navigate(Graph.HOME)
+//                                }
+//                            }
                             LoginOther{
                                 navController.popBackStack()
                                 navController.navigate(SignupScreen.route)
@@ -135,6 +147,9 @@ fun LoginScreen(navController: NavHostController,
 fun LoginForm(loginUIState: LoginUIState,
               onValueChange: (UserLoginDetails) -> Unit = {},
               onClick: () -> Unit,
+              status: Boolean,
+              navController: NavHostController,
+              viewModel: TracktViewModel
 ) {
     Column(
         modifier = Modifier
@@ -218,7 +233,13 @@ fun LoginForm(loginUIState: LoginUIState,
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(50.dp),
-                onClick = onClick,
+                onClick = {onClick()
+                          Log.v("api status", status.toString())
+                          if (status){
+                              Log.v("api status", status.toString())
+                              navController.popBackStack()
+                              navController.navigate(Graph.HOME)
+                          }},
                 enabled = loginUIState.isEntryValid,
                 shape = MaterialTheme.shapes.small,
                 colors = ButtonDefaults.buttonColors(

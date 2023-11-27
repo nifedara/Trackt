@@ -1,6 +1,7 @@
 package com.example.trackt.ui.screens
 
 import android.annotation.SuppressLint
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -60,8 +61,10 @@ fun TravelsScreen(navigateToDestination: (Int) -> Unit,
                   addDestination: () -> Unit,
                   viewModel: TracktViewModel = viewModel(factory = AppViewModelProvider.createViewModelInstance() )
 ) {
-    val travelsUIState by viewModel.travelsListUIState.collectAsState()
-    //val profileName = viewModel.name
+    val travelsUIState by viewModel.travelsState.collectAsState()
+    //val travelsUIState by viewModel.travelsListUIState.collectAsState()
+    val profileName by viewModel.name.collectAsState()
+    //val name = viewModel.yourName
 
     Scaffold(
         topBar = {
@@ -79,7 +82,8 @@ fun TravelsScreen(navigateToDestination: (Int) -> Unit,
         )
         {
             Spacer(modifier = Modifier.height(20.dp))
-            ProfileMessage()
+            ProfileMessage("Yooo $profileName")
+            Log.v("profile name", profileName)
             Spacer(modifier = Modifier.height(30.dp))
             DestinationBody(destinationList = travelsUIState.travelsList,
                             onDestinationClick = navigateToDestination,
@@ -89,14 +93,14 @@ fun TravelsScreen(navigateToDestination: (Int) -> Unit,
 }
 
 @Composable
-fun ProfileMessage(
+fun ProfileMessage(name: String
 ) {
     Column(modifier = Modifier
         .fillMaxWidth()
         .padding(24.dp)
     ) {
         Text(
-            text = "OLUWANIFEMI",
+            text = name,
             fontFamily = Caudex,
             fontSize = 16.sp,
             textAlign = TextAlign.Left,

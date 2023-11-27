@@ -9,21 +9,23 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.example.trackt.application.ApplicationContext
-import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class TracktViewModel(
     private val usersRepository: UsersRepository,
-    destinationRepository: DestinationRepository): ViewModel() {
+    private val destinationRepository: DestinationRepository): ViewModel() {
 
     var signupUIState by mutableStateOf(SignupUIState()) //for signup
     var loginUIState by mutableStateOf(LoginUIState()) //for login
 
     private var yourToken: String? = null
-    //var name: String? = null
+//    var yourName: String? = null
+//    var yourStatus: Boolean? = false
 
     private fun validateUserInput(uiState: UserFullDetails = signupUIState.userDetails): Boolean {
         return with(uiState) {
@@ -37,7 +39,7 @@ class TracktViewModel(
     }
     fun createUser() {
         viewModelScope.launch {
-            usersRepository.createUser(signupUIState.userDetails.toUser())
+            val signupResponse = usersRepository.createUser(signupUIState.userDetails.toUser())
         }
     }
 
@@ -50,43 +52,81 @@ class TracktViewModel(
         loginUIState =
             LoginUIState(userLoginDetails = userLoginDetails, isEntryValid = validateLoginInput(userLoginDetails))
     }
+
+    //status
+    private val _status = MutableStateFlow(false)
+    val status: StateFlow<Boolean> = _status.asStateFlow()
+
+    //name
+    private val _name = MutableStateFlow("")
+    val name: StateFlow<String> = _name.asStateFlow()
     fun getUser(context: Context){
         val sessionManger = SessionManager(context)
         viewModelScope.launch {
-            val token = usersRepository.getUser(loginUIState.userLoginDetails.toLogin())
+            withContext(Dispatchers.IO) {
+                val loginResponse = usersRepository.getUser(loginUIState.userLoginDetails.toLogin())
+                val token = loginResponse.body()!!.data.token
+                val userName = loginResponse.body()!!.data.userInfo.name
+                val status = loginResponse.body()!!.status
 
-            Log.v("Login token", "${token.body()!!.accessToken} Hello, something happened")
+                Log.v("Login token", "$token Hello, something happened")
+                Log.v("Name", "$userName Hello, something happened")
 
-            if (token.body()?.accessToken  != null) {
-                sessionManger.saveAuthToken(token.body()!!.accessToken)
+                sessionManger.saveAuthToken(token)
                 //val theToken = sessionManger.fetchAuthToken()
-                val theToken = token.body()!!.accessToken
-                setToken(theToken)
-                Log.v("The token", "$theToken Here's your token")
+//            val theToken = token.body()!!.accessToken
+                setToken(token)
+//                setStatus(status)
+//                setName(userName)
+                _status.value = status
+                _name.value = userName
+                Log.v("_status", "${_status.value} Hello, something happened")
+                Log.v("_name", "${_name.value} Hello, something happened")
             }
+//            Log.v("The token", "$theToken Here's your token")
         }
     }
 
 //    private val sessionManager: SessionManager = SessionManager(sContext)
 //    private val yourToken = sessionManager.fetchAuthToken()
 
-    val travelsListUIState: StateFlow<TravelsUIState> =
-        destinationRepository.getDestinations(yourToken).map { TravelsUIState(it) }
-            .stateIn(
-                scope = viewModelScope,
-                started = SharingStarted.WhileSubscribed(TIMEOUT_MILLIS),
-                initialValue = TravelsUIState()
-            )
-    companion object{
-        private const val TIMEOUT_MILLIS = 5_000L
+//    val travelsListUIState: StateFlow<TravelsUIState> =
+//        destinationRepository.getDestinations(yourToken).map { TravelsUIState(it) }
+//            .stateIn(
+//                scope = viewModelScope,
+//                started = SharingStarted.WhileSubscribed(TIMEOUT_MILLIS),
+//                initialValue = TravelsUIState()
+//            )
+//    companion object{
+//        private const val TIMEOUT_MILLIS = 5_000L
+//    }
+
+    private val _travelsState = MutableStateFlow(TravelsUIState())
+    val travelsState: StateFlow<TravelsUIState> = _travelsState.asStateFlow()
+
+    init {
+        getDestinations()
     }
+        private fun getDestinations() {
+            viewModelScope.launch {
+                if (yourToken != null){
+                    val getDestinationsResponse = destinationRepository.getDestinations(yourToken!!)
+                    val destinations = getDestinationsResponse.data
+                    _travelsState.value = destinations
+                }
+            }
+        }
 
     private fun setToken(token: String?){
         yourToken = token
     }
-    //private fun setName(yourName: String){
-      //  name = yourName
-    //}
+//    private fun setStatus(status: Boolean){
+//        yourStatus = status
+//    }
+//    private fun setName(name: String?){
+//        yourName = name
+//    }
+
 }
 
 data class SignupUIState(
@@ -106,9 +146,13 @@ data class UserFullDetails(
     )
 }
 
-data class  LoginUIState(
+data class LoginUIState(
     val userLoginDetails: UserLoginDetails = UserLoginDetails(),
-    var isEntryValid : Boolean = false
+    var isEntryValid : Boolean = false,
+    //var name: String = ""
+)
+data class LoginValues(
+    val status: Boolean = false
 )
 data class UserLoginDetails(
     var email: String = "",
