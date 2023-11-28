@@ -22,10 +22,9 @@ class TracktViewModel(
 
     var signupUIState by mutableStateOf(SignupUIState()) //for signup
     var loginUIState by mutableStateOf(LoginUIState()) //for login
+    var travelsUIState by mutableStateOf(TravelsUIState()) //for travels
 
     private var yourToken: String? = null
-//    var yourName: String? = null
-//    var yourStatus: Boolean? = false
 
     private fun validateUserInput(uiState: UserFullDetails = signupUIState.userDetails): Boolean {
         return with(uiState) {
@@ -54,12 +53,12 @@ class TracktViewModel(
     }
 
     //status
-    private val _status = MutableStateFlow(false)
-    val status: StateFlow<Boolean> = _status.asStateFlow()
-
-    //name
-    private val _name = MutableStateFlow("")
-    val name: StateFlow<String> = _name.asStateFlow()
+//    private val _status = MutableStateFlow(false)
+//    val status: StateFlow<Boolean> = _status.asStateFlow()
+//
+//    //name
+//    private val _name = MutableStateFlow("")
+//    val name: StateFlow<String> = _name.asStateFlow()
     fun getUser(context: Context){
         val sessionManger = SessionManager(context)
         viewModelScope.launch {
@@ -69,21 +68,16 @@ class TracktViewModel(
                 val userName = loginResponse.body()!!.data.userInfo.name
                 val status = loginResponse.body()!!.status
 
+                if (status){
+                    loginUIState = loginUIState.copy(isUserLoggedIn = true)
+                }
+
                 Log.v("Login token", "$token Hello, something happened")
                 Log.v("Name", "$userName Hello, something happened")
 
                 sessionManger.saveAuthToken(token)
-                //val theToken = sessionManger.fetchAuthToken()
-//            val theToken = token.body()!!.accessToken
                 setToken(token)
-//                setStatus(status)
-//                setName(userName)
-                _status.value = status
-                _name.value = userName
-                Log.v("_status", "${_status.value} Hello, something happened")
-                Log.v("_name", "${_name.value} Hello, something happened")
             }
-//            Log.v("The token", "$theToken Here's your token")
         }
     }
 
@@ -120,13 +114,6 @@ class TracktViewModel(
     private fun setToken(token: String?){
         yourToken = token
     }
-//    private fun setStatus(status: Boolean){
-//        yourStatus = status
-//    }
-//    private fun setName(name: String?){
-//        yourName = name
-//    }
-
 }
 
 data class SignupUIState(
@@ -149,11 +136,9 @@ data class UserFullDetails(
 data class LoginUIState(
     val userLoginDetails: UserLoginDetails = UserLoginDetails(),
     var isEntryValid : Boolean = false,
-    //var name: String = ""
+    val isUserLoggedIn: Boolean = false,
 )
-data class LoginValues(
-    val status: Boolean = false
-)
+
 data class UserLoginDetails(
     var email: String = "",
     var password: String = ""
@@ -166,7 +151,8 @@ data class UserLoginDetails(
 }
 
 data class TravelsUIState(
-    val travelsList: List<Models.DestinationResponse> = listOf()
+    val travelsList: List<Models.DestinationResponse> = emptyList(),
+    val userName: String? = ""
 )
 
 object AppViewModelProvider {
@@ -182,7 +168,6 @@ object AppViewModelProvider {
             override fun <T : ViewModel> create(modelClass: Class<T>): T {
                 val usersRepository = UsersRepository()
                 val destinationRepository = DestinationRepository()
-                //val context: Context = ApplicationContext()
                 if (modelClass.isAssignableFrom(TracktViewModel::class.java)) {
                     return TracktViewModel(usersRepository, destinationRepository) as T
                 }

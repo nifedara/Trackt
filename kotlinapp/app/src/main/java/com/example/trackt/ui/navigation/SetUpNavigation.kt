@@ -5,7 +5,6 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.example.trackt.TracktMainApp
-import com.example.trackt.application.ApplicationContext
 import com.example.trackt.ui.screens.LoginScreen
 import com.example.trackt.ui.screens.SignupScreen
 import com.example.trackt.ui.screens.WelcomeScreen
@@ -31,7 +30,10 @@ fun SetUpNavigationGraph(navController: NavHostController) {
         //login screen
         composable(route = LoginScreen.route)
         {
-            LoginScreen(navController = navController)
+            LoginScreen(onUserLogin = {
+                        navController.popBackStack()
+                        navController.navigate(Graph.HOME)},
+                        navController = navController)
         }
         composable(route = Graph.HOME) {
             TracktMainApp()

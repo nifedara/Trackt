@@ -26,8 +26,8 @@ class Models {
     )
     data class DestinationResponse(
         val destinationId: Int,
-        val destination: String,
-        val image: String,
+        val destinationName: String,
+        val imageUrl: String,
         val budget: Double,
         val date: DateTime,
     )

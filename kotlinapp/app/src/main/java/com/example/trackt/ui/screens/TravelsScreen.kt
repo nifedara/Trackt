@@ -1,7 +1,6 @@
 package com.example.trackt.ui.screens
 
 import android.annotation.SuppressLint
-import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -63,7 +62,7 @@ fun TravelsScreen(navigateToDestination: (Int) -> Unit,
 ) {
     val travelsUIState by viewModel.travelsState.collectAsState()
     //val travelsUIState by viewModel.travelsListUIState.collectAsState()
-    val profileName by viewModel.name.collectAsState()
+    //val profileName by viewModel.name.collectAsState()
     //val name = viewModel.yourName
 
     Scaffold(
@@ -82,8 +81,8 @@ fun TravelsScreen(navigateToDestination: (Int) -> Unit,
         )
         {
             Spacer(modifier = Modifier.height(20.dp))
-            ProfileMessage("Yooo $profileName")
-            Log.v("profile name", profileName)
+            ProfileMessage("Yoo")
+            //Log.v("profile name", profileName)
             Spacer(modifier = Modifier.height(30.dp))
             DestinationBody(destinationList = travelsUIState.travelsList,
                             onDestinationClick = navigateToDestination,
