@@ -24,13 +24,6 @@ class Models {
         val budget: Double,
         val date: DateTime,
     )
-    data class DestinationResponse(
-        val destinationId: Int,
-        val destinationName: String,
-        val imageUrl: String,
-        val budget: Double,
-        val date: DateTime,
-    )
     data class Response(
         val status: Boolean,
         val message: String,
@@ -40,8 +33,17 @@ class Models {
     data class TravelsResponse(
         val status: Boolean,
         val message: String,
-        val data: TravelsUIState
-    )
+        val data: List<DestinationResponse>
+    ){
+        data class DestinationResponse(
+            val destinationId: Int,
+            val destinationName: String,
+            val imageUrl: String,
+            val budget: Double,
+            val date: String,
+            val userId: String
+        )
+    }
     data class LoginResponse(
         val status: Boolean,
         val message: String,

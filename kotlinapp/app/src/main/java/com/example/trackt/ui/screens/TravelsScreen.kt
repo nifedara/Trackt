@@ -35,6 +35,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.style.TextAlign
@@ -45,6 +46,7 @@ import com.example.trackt.R
 import com.example.trackt.TopBar
 import com.example.trackt.data.AppViewModelProvider
 import com.example.trackt.data.Models
+import com.example.trackt.data.SessionManager
 import com.example.trackt.data.TracktViewModel
 import com.example.trackt.ui.theme.Caudex
 import com.example.trackt.ui.theme.PurpleGrey40
@@ -60,10 +62,16 @@ fun TravelsScreen(navigateToDestination: (Int) -> Unit,
                   addDestination: () -> Unit,
                   viewModel: TracktViewModel = viewModel(factory = AppViewModelProvider.createViewModelInstance() )
 ) {
-    val travelsUIState by viewModel.travelsState.collectAsState()
+    //val travelState by viewModel.travelsState.collectAsState()
     //val travelsUIState by viewModel.travelsListUIState.collectAsState()
     //val profileName by viewModel.name.collectAsState()
     //val name = viewModel.yourName
+
+    val context = LocalContext.current
+    val sessionManager = SessionManager(context)
+
+    sessionManager.fetchAuthToken()?.let { viewModel.getDestinations(it) } //check null
+    val travelState by viewModel.travelsState.collectAsState()
 
     Scaffold(
         topBar = {
@@ -82,9 +90,9 @@ fun TravelsScreen(navigateToDestination: (Int) -> Unit,
         {
             Spacer(modifier = Modifier.height(20.dp))
             ProfileMessage("Yoo")
-            //Log.v("profile name", profileName)
+            //viewModel.travelsUIState.userName?.let { it1 -> Log.v("profile name", it1) }
             Spacer(modifier = Modifier.height(30.dp))
-            DestinationBody(destinationList = travelsUIState.travelsList,
+            DestinationBody(destinationList = travelState.travelsList,
                             onDestinationClick = navigateToDestination,
                             onClick = addDestination)
         }
@@ -118,7 +126,7 @@ fun ProfileMessage(name: String
 }
 
 @Composable
-fun DestinationBody(destinationList: List<Models.DestinationResponse>,
+fun DestinationBody(destinationList: List<Models.TravelsResponse.DestinationResponse>,
                     onDestinationClick: (Int) -> Unit,
                     onClick: () -> Unit
 ) {
@@ -174,8 +182,8 @@ fun DestinationBody(destinationList: List<Models.DestinationResponse>,
 }
 
 @Composable
-fun DestinationList(destinationList: List<Models.DestinationResponse>,
-                    onClick: (Models.DestinationResponse) -> Unit
+fun DestinationList(destinationList: List<Models.TravelsResponse.DestinationResponse>,
+                    onClick: (Models.TravelsResponse.DestinationResponse) -> Unit
 ){
     LazyVerticalGrid(columns = GridCells.Fixed(2)){
         items(items = destinationList, key = {it.destinationId}){destination ->
@@ -186,7 +194,7 @@ fun DestinationList(destinationList: List<Models.DestinationResponse>,
 }
 
 @Composable
-fun DestinationCard(cardContent: Models.DestinationResponse,
+fun DestinationCard(cardContent: Models.TravelsResponse.DestinationResponse,
                     modifier: Modifier = Modifier){
     Card(modifier = Modifier.size(150.dp, 190.dp),
         shape = MaterialTheme.shapes.small,
@@ -204,7 +212,7 @@ fun DestinationCard(cardContent: Models.DestinationResponse,
             )
             Spacer(modifier = Modifier.height(4.dp))
             TextButton(onClick = { /*TODO*/ }) {
-                Text(text = cardContent.destination,
+                Text(text = cardContent.destinationName,
                     fontFamily = Caudex,
                     fontSize = 16.sp,
                     textAlign = TextAlign.Center,

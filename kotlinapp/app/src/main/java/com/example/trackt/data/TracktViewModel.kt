@@ -21,7 +21,7 @@ class TracktViewModel(
     private val destinationRepository: DestinationRepository): ViewModel() {
 
     var signupUIState by mutableStateOf(SignupUIState()) //for signup
-    var loginUIState by mutableStateOf(LoginUIState()) //for login
+    var loginUIState by mutableStateOf(LoginUIState(token = "")) //for login
     var travelsUIState by mutableStateOf(TravelsUIState()) //for travels
 
     private var yourToken: String? = null
@@ -49,7 +49,7 @@ class TracktViewModel(
     }
     fun updateLoginUiState(userLoginDetails: UserLoginDetails) {
         loginUIState =
-            LoginUIState(userLoginDetails = userLoginDetails, isEntryValid = validateLoginInput(userLoginDetails))
+            LoginUIState(userLoginDetails = userLoginDetails, isEntryValid = validateLoginInput(userLoginDetails), token = "")
     }
 
     //status
@@ -69,11 +69,11 @@ class TracktViewModel(
                 val status = loginResponse.body()!!.status
 
                 if (status){
-                    loginUIState = loginUIState.copy(isUserLoggedIn = true)
+                    loginUIState = loginUIState.copy(isUserLoggedIn = true, token = token, userName = userName)
                 }
 
                 Log.v("Login token", "$token Hello, something happened")
-                Log.v("Name", "$userName Hello, something happened")
+                Log.v("loginUIState", "$loginUIState Hello, login UI State")
 
                 sessionManger.saveAuthToken(token)
                 setToken(token)
@@ -97,19 +97,22 @@ class TracktViewModel(
 
     private val _travelsState = MutableStateFlow(TravelsUIState())
     val travelsState: StateFlow<TravelsUIState> = _travelsState.asStateFlow()
+    //private val _travelsState = MutableStateFlow<TravelsUIState?>(null)
 
-    init {
-        getDestinations()
-    }
-        private fun getDestinations() {
-            viewModelScope.launch {
-                if (yourToken != null){
-                    val getDestinationsResponse = destinationRepository.getDestinations(yourToken!!)
-                    val destinations = getDestinationsResponse.data
-                    _travelsState.value = destinations
-                }
-            }
+    fun getDestinations(token: String) {
+        viewModelScope.launch {
+            //val getDestinationsResponse = destinationRepository.getDestinations(loginUIState.token)
+            val getDestinationsResponse = destinationRepository.getDestinations((token))
+            val destinations = getDestinationsResponse.data
+            _travelsState.value = TravelsUIState(travelsList = destinations)
         }
+    }
+
+//    init {
+//        if (loginUIState.token.isNotBlank()){
+//            getDestinations()
+//        }
+//    }
 
     private fun setToken(token: String?){
         yourToken = token
@@ -137,6 +140,8 @@ data class LoginUIState(
     val userLoginDetails: UserLoginDetails = UserLoginDetails(),
     var isEntryValid : Boolean = false,
     val isUserLoggedIn: Boolean = false,
+    var token: String,
+    val userName: String? = ""
 )
 
 data class UserLoginDetails(
@@ -151,7 +156,7 @@ data class UserLoginDetails(
 }
 
 data class TravelsUIState(
-    val travelsList: List<Models.DestinationResponse> = emptyList(),
+    var travelsList: List<Models.TravelsResponse.DestinationResponse> = emptyList(),
     val userName: String? = ""
 )
 
