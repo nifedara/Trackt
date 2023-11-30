@@ -33,9 +33,9 @@ namespace webapi.Models
                 .HasColumnType("numeric(10,2)");
 
             // Use timestamp with time zone for DateTime in PostgreSQL
-            modelBuilder.Entity<Destination>()
-                .Property(p => p.Date)
-                .HasColumnType("timestamp with time zone");
+            //modelBuilder.Entity<Destination>()
+            //    .Property(p => p.Date)
+            //    .HasColumnType("timestamp with time zone");
 
         }
         public DbSet<Destination> Destinations { get; set; }

@@ -165,8 +165,9 @@ namespace webapi.Migrations
                     b.Property<decimal>("Budget")
                         .HasColumnType("numeric(10,2)");
 
-                    b.Property<DateTime>("Date")
-                        .HasColumnType("timestamp with time zone");
+                    b.Property<string>("Date")
+                        .IsRequired()
+                        .HasColumnType("text");
 
                     b.Property<string>("DestinationName")
                         .IsRequired()

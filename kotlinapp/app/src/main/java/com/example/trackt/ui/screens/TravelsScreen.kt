@@ -42,6 +42,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import coil.compose.AsyncImage
 import com.example.trackt.R
 import com.example.trackt.TopBar
 import com.example.trackt.data.AppViewModelProvider
@@ -181,11 +182,15 @@ fun DestinationBody(destinationList: List<Models.TravelsResponse.DestinationResp
     }
 }
 
+@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun DestinationList(destinationList: List<Models.TravelsResponse.DestinationResponse>,
                     onClick: (Models.TravelsResponse.DestinationResponse) -> Unit
 ){
-    LazyVerticalGrid(columns = GridCells.Fixed(2)){
+    LazyVerticalGrid(columns = GridCells.Fixed(2),
+        verticalArrangement = Arrangement.spacedBy(16.dp),
+        horizontalArrangement = Arrangement.spacedBy(16.dp),
+        modifier = Modifier.fillMaxSize()){
         items(items = destinationList, key = {it.destinationId}){destination ->
             DestinationCard(cardContent = destination,
                 modifier = Modifier.clickable { onClick(destination) })
@@ -199,16 +204,15 @@ fun DestinationCard(cardContent: Models.TravelsResponse.DestinationResponse,
     Card(modifier = Modifier.size(150.dp, 190.dp),
         shape = MaterialTheme.shapes.small,
         colors = CardDefaults.cardColors(containerColor = TracktGray1) ,
-        elevation = CardDefaults.cardElevation(4.dp)) {
+        elevation = CardDefaults.cardElevation(3.dp)) {
         Column(modifier = Modifier.fillMaxWidth()) {
-            Image(
-                painter = painterResource(id = R.drawable.img1),
-                contentDescription = "location image",
-                contentScale = ContentScale.Crop,
-                modifier = Modifier
-                    .padding(5.dp, 5.dp, 5.dp, 0.dp)
-                    .size(140.dp)
-                    .clip(RoundedCornerShape(8.dp))
+            AsyncImage(model = cardContent.imageUrl,
+                      contentDescription = "location image",
+                      contentScale = ContentScale.Crop,
+                      modifier = Modifier
+                        .padding(5.dp, 5.dp, 5.dp, 0.dp)
+                        .size(140.dp)
+                        .clip(RoundedCornerShape(8.dp))
             )
             Spacer(modifier = Modifier.height(4.dp))
             TextButton(onClick = { /*TODO*/ }) {

@@ -23,7 +23,7 @@ namespace webapi.Models
         public decimal Budget { get; set; }
 
         [Required]
-        public DateTime Date { get; set; }
+        public string? Date { get; set; } = DateTime.Now.Date.ToString();
 
         [Required]
         public string? UserId { get; set; }

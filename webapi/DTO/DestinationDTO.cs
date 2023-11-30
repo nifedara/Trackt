@@ -13,6 +13,6 @@ namespace webapi.DTO
         [Precision(10, 2)]
         public decimal Budget { get; set; }
         [Required]
-        public DateTime Date { get; set; }
+        public string? Date { get; set; }
     }
 }
