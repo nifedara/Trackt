@@ -1,6 +1,7 @@
 package com.example.trackt.data
 
 import com.example.trackt.data.RetrofitHelper.apiService
+import okhttp3.MultipartBody
 import retrofit2.Response
 
 class  UsersRepository {
@@ -12,7 +13,7 @@ class  UsersRepository {
     }
 }
 class  DestinationRepository {
-    suspend fun createDestination(destination: Models.Destination, token: String): Response<Models.Response> {
+    suspend fun createDestination(destination: MultipartBody, token: String): Response<Models.Response> {
         return apiService.createDestination(destination, "Bearer $token")}
 
     suspend fun getDestinations(token: String) : Models.TravelsResponse {

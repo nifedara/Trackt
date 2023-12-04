@@ -1,7 +1,6 @@
 package com.example.trackt.data
 
-import android.graphics.Bitmap
-import com.google.type.DateTime
+import okhttp3.MultipartBody
 
 class Models {
 
@@ -15,15 +14,20 @@ class Models {
         val email: String,
         val password: String
     )
-//    data class LoginResponse(
-//        @SerializedName("accessToken") val accessToken: String
+
+//    data class Destination(
+//        //@Part val image: MultipartBody.Part,
+////        val destinationName: String,
+////        val budget: Double,
+////        val date: String,
 //    )
-    data class Destination(
-        val image: Bitmap,
-        val destinationName: String,
-        val budget: Double,
-        val date: DateTime,
-    )
+data class Destination(
+    val image: MultipartBody,
+    val destinationName: MultipartBody,
+    val budget: MultipartBody,
+    val date: MultipartBody
+)
+
     data class Response(
         val status: Boolean,
         val message: String,

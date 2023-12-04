@@ -1,6 +1,7 @@
 package com.example.trackt.ui.screens
 
 //noinspection UsingMaterialAndMaterial3Libraries
+//noinspection UsingMaterialAndMaterial3Libraries
 import android.annotation.SuppressLint
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
@@ -16,7 +17,6 @@ import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-//noinspection UsingMaterialAndMaterial3Libraries
 import androidx.compose.material.Divider
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -46,9 +46,9 @@ import androidx.navigation.NavHostController
 import com.example.trackt.R
 import com.example.trackt.TopBar
 import com.example.trackt.data.AppViewModelProvider
+import com.example.trackt.data.SignupUIState
 import com.example.trackt.data.TracktViewModel
 import com.example.trackt.data.UserFullDetails
-import com.example.trackt.data.SignupUIState
 import com.example.trackt.ui.navigation.NavigationDestination
 import com.example.trackt.ui.theme.Caudex
 import com.example.trackt.ui.theme.TracktGray1
@@ -67,7 +67,6 @@ object SignupScreen : NavigationDestination {
 fun SignupScreen(navController: NavHostController,
                  viewModel: TracktViewModel = viewModel(factory = AppViewModelProvider.createViewModelInstance())
 ) {
-    //val coroutineScope = rememberCoroutineScope()
 
     Scaffold(
         topBar = {

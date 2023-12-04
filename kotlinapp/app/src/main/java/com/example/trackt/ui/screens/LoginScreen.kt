@@ -80,7 +80,7 @@ fun LoginScreen(onUserLogin: () -> Unit,
             .filter{ it.isUserLoggedIn }
             .flowWithLifecycle(lifecycle)
             .collect { currentOnUserLogin() }
-    }
+}
 
     Scaffold(
         topBar = {

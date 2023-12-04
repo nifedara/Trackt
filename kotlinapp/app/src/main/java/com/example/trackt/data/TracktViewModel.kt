@@ -15,6 +15,11 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.MultipartBody
+import okhttp3.RequestBody.Companion.asRequestBody
+import java.io.File
+
 
 class TracktViewModel(
     private val usersRepository: UsersRepository,
@@ -23,9 +28,23 @@ class TracktViewModel(
     var signupUIState by mutableStateOf(SignupUIState()) //for signup
     var loginUIState by mutableStateOf(LoginUIState(token = "")) //for login
     var travelsUIState by mutableStateOf(TravelsUIState()) //for travels
+    var destinationUIState by mutableStateOf(DestinationUIState()) //for travels
 
     private var yourToken: String? = null
-
+    fun updateDestinationForm(destinationDetails: DestinationDetails){
+        destinationUIState =
+            DestinationUIState(destinationDetails = destinationDetails)
+    }
+    fun createDestination(token: String){
+        viewModelScope.launch {
+            val createDestinationResponse = destinationRepository.createDestination(destinationUIState.destinationDetails.toDestination(), token)
+            Log.v("image contains this:", destinationUIState.destinationDetails.image.toString())
+            Log.v("i got here", true.toString())
+            Log.v("destination response", createDestinationResponse.toString())
+            Log.v("destination response status", createDestinationResponse.body()?.status.toString())
+            Log.v("destination response message", createDestinationResponse.body()?.message.toString())
+        }
+    }
     private fun validateUserInput(uiState: UserFullDetails = signupUIState.userDetails): Boolean {
         return with(uiState) {
             name.isNotBlank() && email.isNotBlank()  && password.isNotBlank() && confirmPassword.isNotBlank()
@@ -116,6 +135,37 @@ class TracktViewModel(
 
     private fun setToken(token: String?){
         yourToken = token
+    }
+}
+
+data class DestinationUIState(
+    val destinationDetails: DestinationDetails = DestinationDetails()
+)
+data class DestinationDetails(
+    val destinationName: String = "",
+    val image: File? = null,
+    val budget: Double = 0.0,
+    val date: String = ""
+){
+    fun toDestination(): MultipartBody {
+        if (image != null){
+            val requestBody = image.asRequestBody("multipart/form-data".toMediaTypeOrNull())
+            return MultipartBody.Builder()
+                .setType(MultipartBody.FORM)
+                .addFormDataPart("destinationName", destinationName)
+                .addFormDataPart("image", image.name, requestBody)
+                //.addFormDataPart("image", image.name, image.asRequestBody())
+                .addFormDataPart("budget", budget.toString())
+                .addFormDataPart("date", date)
+                .build()
+        }
+        else
+            return MultipartBody.Builder()
+                .setType(MultipartBody.FORM)
+                .addFormDataPart("destinationName", destinationName)
+                .addFormDataPart("budget", budget.toString())
+                .addFormDataPart("date", date)
+                .build()
     }
 }
 
