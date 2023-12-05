@@ -69,6 +69,7 @@ import com.example.trackt.ui.theme.TracktPurple11
 import com.example.trackt.ui.theme.TracktPurple2
 import com.example.trackt.ui.theme.TracktWhite2
 import java.io.File
+import java.io.FileOutputStream
 
 
 object CreateDestinationScreen : NavigationDestination {
@@ -138,12 +139,14 @@ fun CreateDestinationScreen(navController: NavHostController,
                             CreateDestinationForm(destinationFormState = viewModel.destinationUIState.destinationDetails,
                                 onValueChange = viewModel::updateDestinationForm,
                                 onClick = {
-                                    Log.v("Got here", "true")
+                                    Log.v("Button clicked", "true")
                                     if (token != null) {
                                         viewModel.createDestination(token)
                                         Log.v("Entered button", "true")
                                         navController.popBackStack()
                                         navController.navigate(Graph.HOME)}
+                                    else
+                                        Log.v("Token is null", "true")
                                     },
                                 onImageUpload = {photoLauncher.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))},
                                 imageUri = imageUri,
@@ -233,12 +236,24 @@ fun CreateDestinationForm(destinationFormState: DestinationDetails,
                 }
                 else{
                     val stream = context.contentResolver.openInputStream(imageUri)
-                    val file = File.createTempFile("image", ".jpeg")
-                    //val file = File.createTempFile("image", ".jpeg", context.cacheDir)
-                    org.apache.commons.io.FileUtils.copyInputStreamToFile(stream,file)
+                    val file = File(context.cacheDir, "image_${System.currentTimeMillis()}.jpeg")
+                    file.createNewFile()
+                    // Copy the stream to the file
+                    stream.use { inputStream ->
+                        FileOutputStream(file).use { outputStream ->
+                            inputStream?.copyTo(outputStream)
+                        }
+                    }
                     onValueChange(destinationFormState.copy(image = file))
-                    Log.v("image uri", imageUri.toString())
-                    Log.v("image file path", file.absolutePath)
+                    Log.v("image file path", file.toString())
+                    Log.v("image file absolute path", file.absolutePath)
+
+                    //val file = File.createTempFile("image", ".jpeg")
+                    //val file = File.createTempFile("image", ".jpeg", context.cacheDir)
+                    //org.apache.commons.io.FileUtils.copyInputStreamToFile(stream,file)
+                    //onValueChange(destinationFormState.copy(image = file))
+                    //Log.v("image uri", imageUri.toString())
+                    //Log.v("image file path", file.absolutePath)
 
                     //val imgFile = getRealPathFromURI(imageUri, context)?.let { File(it) }
                     //onValueChange(destinationFormState.copy(image = imgFile))

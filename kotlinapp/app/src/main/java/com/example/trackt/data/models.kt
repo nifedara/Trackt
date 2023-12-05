@@ -1,6 +1,7 @@
 package com.example.trackt.data
 
 import okhttp3.MultipartBody
+import retrofit2.http.Part
 
 class Models {
 
@@ -22,10 +23,10 @@ class Models {
 ////        val date: String,
 //    )
 data class Destination(
-    val image: MultipartBody,
-    val destinationName: MultipartBody,
-    val budget: MultipartBody,
-    val date: MultipartBody
+    @Part val destinationName: MultipartBody.Part,
+    @Part val image: MultipartBody.Part,
+    @Part val budget: MultipartBody.Part,
+    @Part val date: MultipartBody.Part
 )
 
     data class Response(

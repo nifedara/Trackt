@@ -1,12 +1,12 @@
 package com.example.trackt.data
 
-import okhttp3.MultipartBody
 import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.Header
+import retrofit2.http.Multipart
 import retrofit2.http.POST
 import retrofit2.http.Path
 
@@ -20,8 +20,9 @@ interface ApiService {
     //suspend fun getUser(@Body user: Models.UserLogin): retrofit2.Response<Models.LoginResponse>
 
     //destination
+    @Multipart
     @POST("api/Destinations/Create")
-    suspend fun createDestination(@Body destination: MultipartBody, @Header("Authorization") token: String): Response<Models.Response>
+    suspend fun createDestination(@Body destination: Models.Destination, @Header("Authorization") token: String): Response<Models.Response>
     //suspend fun createDestination(@Body destination: Models.Destination, @Header("Authorization") token: String)
 
     @GET("api/Destinations/Get")
