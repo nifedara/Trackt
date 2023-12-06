@@ -32,10 +32,14 @@ class TracktViewModel(
     var destinationUIState by mutableStateOf(DestinationUIState()) //for travels
 
     private var yourToken: String? = null
+
+
+    //create new destination
     fun updateDestinationForm(destinationDetails: DestinationDetails){
         destinationUIState =
             DestinationUIState(destinationDetails = destinationDetails)
     }
+    //create destination
     fun createDestination(token: String){
         viewModelScope.launch {
             Log.v("Coroutine", "Started")
@@ -70,6 +74,9 @@ class TracktViewModel(
             }
         }
     }
+
+
+    //create user
     private fun validateUserInput(uiState: UserFullDetails = signupUIState.userDetails): Boolean {
         return with(uiState) {
             name.isNotBlank() && email.isNotBlank()  && password.isNotBlank() && confirmPassword.isNotBlank()
@@ -80,12 +87,15 @@ class TracktViewModel(
         signupUIState =
             SignupUIState(userDetails = userDetails, isEntryValid = validateUserInput(userDetails))
     }
+    //create a new user
     fun createUser() {
         viewModelScope.launch {
             val signupResponse = usersRepository.createUser(signupUIState.userDetails.toUser())
         }
     }
 
+
+    //log in user
     private fun validateLoginInput(uiState: UserLoginDetails = loginUIState.userLoginDetails): Boolean {
         return with(uiState) {
             email.isNotBlank()  && password.isNotBlank()
@@ -95,14 +105,7 @@ class TracktViewModel(
         loginUIState =
             LoginUIState(userLoginDetails = userLoginDetails, isEntryValid = validateLoginInput(userLoginDetails), token = "")
     }
-
-    //status
-//    private val _status = MutableStateFlow(false)
-//    val status: StateFlow<Boolean> = _status.asStateFlow()
-//
-//    //name
-//    private val _name = MutableStateFlow("")
-//    val name: StateFlow<String> = _name.asStateFlow()
+    //get user
     fun getUser(context: Context){
         val sessionManger = SessionManager(context)
         viewModelScope.launch {
@@ -139,10 +142,12 @@ class TracktViewModel(
 //        private const val TIMEOUT_MILLIS = 5_000L
 //    }
 
+    //display destinations
     private val _travelsState = MutableStateFlow(TravelsUIState())
     val travelsState: StateFlow<TravelsUIState> = _travelsState.asStateFlow()
     //private val _travelsState = MutableStateFlow<TravelsUIState?>(null)
 
+    //get destinations
     fun getDestinations(token: String) {
         viewModelScope.launch {
             //val getDestinationsResponse = destinationRepository.getDestinations(loginUIState.token)
@@ -163,6 +168,7 @@ class TracktViewModel(
     }
 }
 
+//create destination UI state
 data class DestinationUIState(
     val destinationDetails: DestinationDetails = DestinationDetails()
 )
@@ -172,30 +178,9 @@ data class DestinationDetails(
     val budget: Double = 0.0,
     val date: String = ""
 )
-//{
-//    fun toDestination(): Models.Destination{
-//        if (image != null){
-//            //val requestBody = image.asRequestBody("multipart/form-data".toMediaTypeOrNull())
-//            //val requestBody = image.asRequestBody("image/jpeg".toMediaTypeOrNull())
-//            return MultipartBody.Builder()
-//                .setType(MultipartBody.FORM)
-//                .addFormDataPart("destinationName", destinationName)
-//                //.addFormDataPart("image", image.name, requestBody)
-//                .addFormDataPart("image", image.name, image.asRequestBody())
-//                .addFormDataPart("budget", budget.toString())
-//                .addFormDataPart("date", date)
-//                .build()
-//        }
-//        else
-//            return MultipartBody.Builder()
-//                .setType(MultipartBody.FORM)
-//                .addFormDataPart("destinationName", destinationName)
-//                .addFormDataPart("budget", budget.toString())
-//                .addFormDataPart("date", date)
-//                .build()
-//    }
-//}
 
+
+//Sign up UI state
 data class SignupUIState(
     val userDetails: UserFullDetails = UserFullDetails(),
     var isEntryValid : Boolean = false
@@ -210,9 +195,10 @@ data class UserFullDetails(
         name = name,
         email = email,
         password = password
-    )
-}
+    ) }
 
+
+//Login UI state
 data class LoginUIState(
     val userLoginDetails: UserLoginDetails = UserLoginDetails(),
     var isEntryValid : Boolean = false,
@@ -220,7 +206,6 @@ data class LoginUIState(
     var token: String,
     val userName: String? = ""
 )
-
 data class UserLoginDetails(
     var email: String = "",
     var password: String = ""
@@ -229,13 +214,15 @@ data class UserLoginDetails(
         name = "",
         email = email,
         password = password
-    )
-}
+    ) }
 
+
+//Travel UI state
 data class TravelsUIState(
-    var travelsList: List<Models.TravelsResponse.DestinationResponse> = emptyList(),
+    var travelsList: List<Models.DestinationResponse.Destination> = emptyList(),
     val userName: String? = ""
 )
+
 
 object AppViewModelProvider {
 

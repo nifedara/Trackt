@@ -15,7 +15,7 @@ import retrofit2.http.Path
 interface ApiService {
     //user
     @POST("api/Account/Create")
-    suspend fun createUser(@Body user: Models.User): Response<Models.Response>
+    suspend fun createUser(@Body user: Models.User): Response<Models.BaseResponse>
 
     @POST("api/Account/Login")
     suspend fun getUser(@Body user: Models.Login): Response<Models.LoginResponse>
@@ -24,23 +24,22 @@ interface ApiService {
     //destination
     @Multipart
     @POST("api/Destinations/Create")
-    suspend fun createDestination(@Part destinationName: MultipartBody.Part,
-                                  @Part image: MultipartBody.Part,
-                                  @Part budget: MultipartBody.Part,
-                                  @Part date: MultipartBody.Part,
-                                  @Header("Authorization") token: String): Response<Models.Response>
+    suspend fun createDestination(@Part destinationName: MultipartBody.Part, @Part image: MultipartBody.Part,
+                                  @Part budget: MultipartBody.Part, @Part date: MultipartBody.Part,
+                                  @Header("Authorization") token: String): Response<Models.BaseResponse>
     //suspend fun createDestination(@Body destination: Models.Destination, @Header("Authorization") token: String): Response<Models.Response>
     //suspend fun createDestination(@Body destination: Models.Destination, @Header("Authorization") token: String)
 
     @GET("api/Destinations/Get")
-    suspend fun getDestinations(@Header("Authorization") token: String): Models.TravelsResponse
+    suspend fun getDestinations(@Header("Authorization") token: String): Models.DestinationResponse
     //fun getDestinations(@Header("Authorization") token: String): Flow<List<Models.DestinationResponse>>
 
     @GET("api/Destinations/Get?destinationId={num}")
-    suspend fun getDestination(@Path("num") num: Int, @Header("Authorization") token: String): Models.TravelsResponse
+    suspend fun getDestination(@Path("num") num: Int, @Header("Authorization") token: String): Models.DestinationResponse
     //suspend fun getDestination(@Path("num") num: Int, @Header("Authorization")token: String): Models.Destination
 
 }
+
 
 object RetrofitHelper {
 
@@ -48,9 +47,7 @@ object RetrofitHelper {
 
     private fun getInstance(): Retrofit {
         return Retrofit.Builder().baseUrl(baseUrl)
-            .addConverterFactory(GsonConverterFactory.create())
-            // we need to add converter factory to
-            // convert JSON object to Java object
+            .addConverterFactory(GsonConverterFactory.create()) //JSON object to Java object converter
             .build()
     }
 

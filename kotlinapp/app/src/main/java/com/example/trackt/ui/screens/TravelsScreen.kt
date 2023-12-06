@@ -127,7 +127,7 @@ fun ProfileMessage(name: String
 }
 
 @Composable
-fun DestinationBody(destinationList: List<Models.TravelsResponse.DestinationResponse>,
+fun DestinationBody(destinationList: List<Models.DestinationResponse.Destination>,
                     onDestinationClick: (Int) -> Unit,
                     onClick: () -> Unit
 ) {
@@ -184,8 +184,8 @@ fun DestinationBody(destinationList: List<Models.TravelsResponse.DestinationResp
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
-fun DestinationList(destinationList: List<Models.TravelsResponse.DestinationResponse>,
-                    onClick: (Models.TravelsResponse.DestinationResponse) -> Unit
+fun DestinationList(destinationList: List<Models.DestinationResponse.Destination>,
+                    onClick: (Models.DestinationResponse.Destination) -> Unit
 ){
     LazyVerticalGrid(columns = GridCells.Fixed(2),
         verticalArrangement = Arrangement.spacedBy(16.dp),
@@ -199,7 +199,7 @@ fun DestinationList(destinationList: List<Models.TravelsResponse.DestinationResp
 }
 
 @Composable
-fun DestinationCard(cardContent: Models.TravelsResponse.DestinationResponse,
+fun DestinationCard(cardContent: Models.DestinationResponse.Destination,
                     modifier: Modifier = Modifier){
     Card(modifier = Modifier.size(150.dp, 190.dp),
         shape = MaterialTheme.shapes.small,

@@ -5,7 +5,7 @@ import okhttp3.MultipartBody
 import retrofit2.Response
 
 class  UsersRepository {
-    suspend fun createUser(user: Models.User): Response<Models.Response> {
+    suspend fun createUser(user: Models.User): Response<Models.BaseResponse> {
         return apiService.createUser(user)}
 
     suspend fun getUser(user: Models.User) : Response<Models.LoginResponse> {
@@ -14,17 +14,15 @@ class  UsersRepository {
 }
 class  DestinationRepository {
     //suspend fun createDestination(destination: Models.Destination, token: String): Response<Models.Response> {
-    suspend fun createDestination(destinationName: MultipartBody.Part,
-                                  image: MultipartBody.Part,
-                                  budget: MultipartBody.Part,
-                                  date: MultipartBody.Part,
-                                  token: String): Response<Models.Response> {
-        return apiService.createDestination(destinationName, image, budget, date, "Bearer $token")}
+    suspend fun createDestination(destinationName: MultipartBody.Part, image: MultipartBody.Part, budget: MultipartBody.Part, date: MultipartBody.Part, token: String):
+            Response<Models.BaseResponse> {
+        return apiService.createDestination(destinationName, image, budget, date, "Bearer $token")
+    }
 
-    suspend fun getDestinations(token: String) : Models.TravelsResponse {
+    suspend fun getDestinations(token: String) : Models.DestinationResponse {
         return apiService.getDestinations("Bearer $token")
     }
-    suspend fun getDestination(num: Int, token: String) : Models.TravelsResponse {
+    suspend fun getDestination(num: Int, token: String) : Models.DestinationResponse {
         return apiService.getDestination(num, "Bearer $token")
     }
 }

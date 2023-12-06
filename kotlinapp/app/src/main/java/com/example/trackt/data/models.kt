@@ -1,7 +1,5 @@
 package com.example.trackt.data
 
-import okhttp3.MultipartBody
-
 class Models {
 
     data class User(
@@ -15,39 +13,26 @@ class Models {
         val password: String
     )
 
-//    data class Destination(
-//        //@Part val image: MultipartBody.Part,
-////        val destinationName: String,
-////        val budget: Double,
-////        val date: String,
-//    )
-data class Destination(
-    val destinationName: MultipartBody.Part,
-    val image: MultipartBody.Part,
-    val budget: MultipartBody.Part,
-    val date: MultipartBody.Part
-)
-
-    data class Response(
+    data class BaseResponse(
         val status: Boolean,
         val message: String,
         val data: String
     )
 
-    data class TravelsResponse(
+    data class DestinationResponse(
         val status: Boolean,
         val message: String,
-        val data: List<DestinationResponse>
+        val data: List<Destination>
     ){
-        data class DestinationResponse(
+        data class Destination(
             val destinationId: Int,
             val destinationName: String,
             val imageUrl: String,
             val budget: Double,
             val date: String,
             val userId: String
-        )
-    }
+        ) }
+
     data class LoginResponse(
         val status: Boolean,
         val message: String,
@@ -60,7 +45,5 @@ data class Destination(
             data class UserInfo(
                 val name: String,
                 val email: String
-            )
-        }
-    }
+            ) } }
 }
