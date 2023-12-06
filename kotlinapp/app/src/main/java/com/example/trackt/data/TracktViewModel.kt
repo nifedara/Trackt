@@ -18,6 +18,7 @@ import kotlinx.coroutines.withContext
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
 import okhttp3.RequestBody.Companion.asRequestBody
+import okhttp3.RequestBody.Companion.toRequestBody
 import java.io.File
 
 
@@ -39,12 +40,31 @@ class TracktViewModel(
         viewModelScope.launch {
             Log.v("Coroutine", "Started")
             try {
-                val createDestinationResponse = destinationRepository.createDestination(destinationUIState.destinationDetails.toDestination(), token)
+                val destinationName = MultipartBody.Part.createFormData("destinationName", null,
+                    destinationUIState.destinationDetails.destinationName.toRequestBody(null))
+                val image = destinationUIState.destinationDetails.image?.let {
+                    val reqFile = it.asRequestBody("image/*".toMediaTypeOrNull())
+                    MultipartBody.Part.createFormData("image", it.name, reqFile)
+                }
+                val budget = MultipartBody.Part.createFormData("budget", null,
+                    destinationUIState.destinationDetails.budget.toString().toRequestBody("text/plain".toMediaTypeOrNull()))
+                val date = MultipartBody.Part.createFormData("date", null,
+                    destinationUIState.destinationDetails.date.toRequestBody(null)
+                )
+
+                val createDestinationResponse = image?.let {
+                    destinationRepository.createDestination(destinationName, it, budget, date, token) }
+
+                //val createDestinationResponse = destinationRepository.createDestination(destinationUIState.destinationDetails.toDestination(), token)
                 Log.v("image contains this:", destinationUIState.destinationDetails.image.toString())
                 Log.v("i got here", true.toString())
                 Log.v("destination response", createDestinationResponse.toString())
-                Log.v("destination response status", createDestinationResponse.body()?.status.toString())
-                Log.v("destination response message", createDestinationResponse.body()?.message.toString())
+                if (createDestinationResponse != null) {
+                    Log.v("destination response status", createDestinationResponse.body()?.status.toString())
+                }
+                if (createDestinationResponse != null) {
+                    Log.v("destination response message", createDestinationResponse.body()?.message.toString())
+                }
             } catch (e: Exception) {
                 Log.e("Coroutine Exception", e.toString())
             }
@@ -151,29 +171,30 @@ data class DestinationDetails(
     val image: File? = null,
     val budget: Double = 0.0,
     val date: String = ""
-){
-    fun toDestination(): MultipartBody {
-        if (image != null){
-            //val requestBody = image.asRequestBody("multipart/form-data".toMediaTypeOrNull())
-            //val requestBody = image.asRequestBody("image/jpeg".toMediaTypeOrNull())
-            return MultipartBody.Builder()
-                .setType(MultipartBody.FORM)
-                .addFormDataPart("destinationName", destinationName)
-                //.addFormDataPart("image", image.name, requestBody)
-                .addFormDataPart("image", image.name, image.asRequestBody())
-                .addFormDataPart("budget", budget.toString())
-                .addFormDataPart("date", date)
-                .build()
-        }
-        else
-            return MultipartBody.Builder()
-                .setType(MultipartBody.FORM)
-                .addFormDataPart("destinationName", destinationName)
-                .addFormDataPart("budget", budget.toString())
-                .addFormDataPart("date", date)
-                .build()
-    }
-}
+)
+//{
+//    fun toDestination(): Models.Destination{
+//        if (image != null){
+//            //val requestBody = image.asRequestBody("multipart/form-data".toMediaTypeOrNull())
+//            //val requestBody = image.asRequestBody("image/jpeg".toMediaTypeOrNull())
+//            return MultipartBody.Builder()
+//                .setType(MultipartBody.FORM)
+//                .addFormDataPart("destinationName", destinationName)
+//                //.addFormDataPart("image", image.name, requestBody)
+//                .addFormDataPart("image", image.name, image.asRequestBody())
+//                .addFormDataPart("budget", budget.toString())
+//                .addFormDataPart("date", date)
+//                .build()
+//        }
+//        else
+//            return MultipartBody.Builder()
+//                .setType(MultipartBody.FORM)
+//                .addFormDataPart("destinationName", destinationName)
+//                .addFormDataPart("budget", budget.toString())
+//                .addFormDataPart("date", date)
+//                .build()
+//    }
+//}
 
 data class SignupUIState(
     val userDetails: UserFullDetails = UserFullDetails(),

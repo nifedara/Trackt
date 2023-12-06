@@ -1,5 +1,6 @@
 package com.example.trackt.data
 
+import okhttp3.MultipartBody
 import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
@@ -8,6 +9,7 @@ import retrofit2.http.GET
 import retrofit2.http.Header
 import retrofit2.http.Multipart
 import retrofit2.http.POST
+import retrofit2.http.Part
 import retrofit2.http.Path
 
 interface ApiService {
@@ -22,7 +24,12 @@ interface ApiService {
     //destination
     @Multipart
     @POST("api/Destinations/Create")
-    suspend fun createDestination(@Body destination: Models.Destination, @Header("Authorization") token: String): Response<Models.Response>
+    suspend fun createDestination(@Part destinationName: MultipartBody.Part,
+                                  @Part image: MultipartBody.Part,
+                                  @Part budget: MultipartBody.Part,
+                                  @Part date: MultipartBody.Part,
+                                  @Header("Authorization") token: String): Response<Models.Response>
+    //suspend fun createDestination(@Body destination: Models.Destination, @Header("Authorization") token: String): Response<Models.Response>
     //suspend fun createDestination(@Body destination: Models.Destination, @Header("Authorization") token: String)
 
     @GET("api/Destinations/Get")
@@ -37,7 +44,7 @@ interface ApiService {
 
 object RetrofitHelper {
 
-    private const val baseUrl = "http://10.65.10.26:5053/"
+    private const val baseUrl = "http://10.65.10.138:5053/"
 
     private fun getInstance(): Retrofit {
         return Retrofit.Builder().baseUrl(baseUrl)
