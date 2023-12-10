@@ -55,25 +55,20 @@ namespace webapi.Controllers
                         var response = new BaseResponse
                         {
                             Status = false,
-                            Message = result.Errors.Select(e => e.Description).ToString()
+                            Message = new Exception(result.Errors.Select(e => e.Description).First()).Message
                         };
                         return response;
-                        //log later //TODO. throw new Exception(string.Format("Error: {0}", string.Join(", ", result.Errors.Select(e => e.Description))));
+                        //log later //TODO.
                     }
                 }
                 else
                 {
                     var details = new ValidationProblemDetails(ModelState);
-                    //{
-                    //    Type = "https://tools.ietf.org/html/rfc7231#section-6.5.1",
-                    //    Status = StatusCodes.Status400BadRequest
-                    //};
-                    //return new BadRequestObjectResult(details);
 
                     var response = new BaseResponse
                     {
                         Status = false,
-                        Message = details.Detail?.ToString()
+                        Message = new Exception(details.Title).Message
                     };
                     return response;
 
