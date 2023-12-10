@@ -106,7 +106,6 @@ namespace webapi.Controllers
                         };
                         return response;
                     }
-                    //throw new Exception("Invalid login attempt."); }
                     else
                     {
                         var loginCredentials = new SigningCredentials(
@@ -144,23 +143,16 @@ namespace webapi.Controllers
                             }
                         };
                         return response;
-
-                        //return Ok(token);
                     }
                 }
                 else
                 {
-                    var details = new ValidationProblemDetails(ModelState)
-                    {
-                        Type = "https://tools.ietf.org/html/rfc7231#section-6.5.1",
-                        Status = StatusCodes.Status400BadRequest
-                    };
-                    //return new BadRequestObjectResult(details);
+                    var details = new ValidationProblemDetails(ModelState);
 
                     var response = new BaseResponse
                     {
                         Status = false,
-                        Message = details.Detail
+                        Message = new Exception(details.Title).Message
                     };
                     return response;
                 }
