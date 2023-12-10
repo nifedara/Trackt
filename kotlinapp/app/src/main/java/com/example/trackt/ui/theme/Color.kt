@@ -23,3 +23,5 @@ val TracktWhite1 = Color(0xFFFDFDFD)
 val TracktGray1 = Color(0xFFF0F0F0)
 
 val TracktPink1 = Color(0xFFF4B5ED)
+
+val TracktError = Color(0xFFF42525)

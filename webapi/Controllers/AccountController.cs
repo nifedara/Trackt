@@ -102,7 +102,7 @@ namespace webapi.Controllers
                         var response = new BaseResponse
                         {
                             Status = false,
-                            Message = "Invalid login attempt."
+                            Message = "Your username or password is incorrect"
                         };
                         return response;
                     }

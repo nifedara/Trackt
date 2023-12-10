@@ -91,6 +91,10 @@ class TracktViewModel(
     fun createUser() {
         viewModelScope.launch {
             val signupResponse = usersRepository.createUser(signupUIState.userDetails.toUser())
+            val status = signupResponse.body()!!.status
+            val message = signupResponse.body()!!.message
+
+            signupUIState = signupUIState.copy(status = status, message = message)
         }
     }
 
@@ -110,20 +114,34 @@ class TracktViewModel(
         val sessionManger = SessionManager(context)
         viewModelScope.launch {
             withContext(Dispatchers.IO) {
-                val loginResponse = usersRepository.getUser(loginUIState.userLoginDetails.toLogin())
-                val token = loginResponse.body()!!.data.token
-                val userName = loginResponse.body()!!.data.userInfo.name
-                val status = loginResponse.body()!!.status
+                try {
+                    val loginResponse =
+                        usersRepository.getUser(loginUIState.userLoginDetails.toLogin())
+                    val status = loginResponse.body()!!.status
+                    val message = loginResponse.body()!!.message
 
-                if (status){
-                    loginUIState = loginUIState.copy(isUserLoggedIn = true, token = token, userName = userName)
+                    loginUIState = loginUIState.copy(status = status, message = message)
+
+                    if (status){
+                        val token = loginResponse.body()!!.data.token
+                        val userName = loginResponse.body()!!.data.userInfo.name
+
+                        loginUIState = loginUIState.copy(
+                            isUserLoggedIn = true,
+                            token = token,
+                            userName = userName
+                        )
+
+                        Log.v("Login token", "$token Hello, something happened")
+                        Log.v("loginUIState", "$loginUIState Hello, login UI State")
+
+                        sessionManger.saveAuthToken(token)
+                        setToken(token)
+                    }
                 }
-
-                Log.v("Login token", "$token Hello, something happened")
-                Log.v("loginUIState", "$loginUIState Hello, login UI State")
-
-                sessionManger.saveAuthToken(token)
-                setToken(token)
+                catch (e: Exception) {
+                    Log.e("Coroutine Exception", e.toString())
+                }
             }
         }
     }
@@ -183,7 +201,9 @@ data class DestinationDetails(
 //Sign up UI state
 data class SignupUIState(
     val userDetails: UserFullDetails = UserFullDetails(),
-    var isEntryValid : Boolean = false
+    var isEntryValid: Boolean = false,
+    var status: Boolean? = null,
+    var message: String? = null
 )
 data class UserFullDetails(
     var name: String = "",
@@ -202,6 +222,8 @@ data class UserFullDetails(
 data class LoginUIState(
     val userLoginDetails: UserLoginDetails = UserLoginDetails(),
     var isEntryValid : Boolean = false,
+    var status: Boolean? = null,
+    var message: String? = null,
     val isUserLoggedIn: Boolean = false,
     var token: String,
     val userName: String? = ""

@@ -19,7 +19,6 @@ interface ApiService {
 
     @POST("api/Account/Login")
     suspend fun getUser(@Body user: Models.Login): Response<Models.LoginResponse>
-    //suspend fun getUser(@Body user: Models.UserLogin): retrofit2.Response<Models.LoginResponse>
 
     //destination
     @Multipart
@@ -28,7 +27,6 @@ interface ApiService {
                                   @Part budget: MultipartBody.Part, @Part date: MultipartBody.Part,
                                   @Header("Authorization") token: String): Response<Models.BaseResponse>
     //suspend fun createDestination(@Body destination: Models.Destination, @Header("Authorization") token: String): Response<Models.Response>
-    //suspend fun createDestination(@Body destination: Models.Destination, @Header("Authorization") token: String)
 
     @GET("api/Destinations/Get")
     suspend fun getDestinations(@Header("Authorization") token: String): Models.DestinationResponse
@@ -36,14 +34,12 @@ interface ApiService {
 
     @GET("api/Destinations/Get?destinationId={num}")
     suspend fun getDestination(@Path("num") num: Int, @Header("Authorization") token: String): Models.DestinationResponse
-    //suspend fun getDestination(@Path("num") num: Int, @Header("Authorization")token: String): Models.Destination
-
 }
 
 
 object RetrofitHelper {
 
-    private const val baseUrl = "http://10.65.10.138:5053/"
+    private const val baseUrl = "http://192.168.70.94:5053/"
 
     private fun getInstance(): Retrofit {
         return Retrofit.Builder().baseUrl(baseUrl)

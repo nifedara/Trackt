@@ -53,6 +53,7 @@ import com.example.trackt.data.TracktViewModel
 import com.example.trackt.data.UserLoginDetails
 import com.example.trackt.ui.navigation.NavigationDestination
 import com.example.trackt.ui.theme.Caudex
+import com.example.trackt.ui.theme.TracktError
 import com.example.trackt.ui.theme.TracktGray1
 import com.example.trackt.ui.theme.TracktPurple11
 import com.example.trackt.ui.theme.TracktPurple2
@@ -217,6 +218,17 @@ fun LoginForm(loginUIState: LoginUIState,
                 textAlign = TextAlign.Right,
                 color = Color.Black,
             )
+        }
+        Row( modifier = Modifier
+            .fillMaxWidth()
+            .padding(top = 10.dp)
+        ) {
+            if (loginUIState.status == false){
+                Icon(painter = painterResource(id = R.drawable.error_icon), contentDescription = "error icon",
+                    modifier = Modifier.size(12.dp, 12.dp), tint = TracktError)
+                Spacer(modifier = Modifier.width(8.dp))
+                loginUIState.message?.let { Text(text = it, fontFamily = Caudex, fontSize = 10.sp, textAlign = TextAlign.Left, color = TracktError) }
+            }
         }
         Row( modifier = Modifier
             .fillMaxWidth()

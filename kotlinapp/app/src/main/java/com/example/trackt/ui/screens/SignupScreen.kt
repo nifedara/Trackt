@@ -51,6 +51,7 @@ import com.example.trackt.data.TracktViewModel
 import com.example.trackt.data.UserFullDetails
 import com.example.trackt.ui.navigation.NavigationDestination
 import com.example.trackt.ui.theme.Caudex
+import com.example.trackt.ui.theme.TracktError
 import com.example.trackt.ui.theme.TracktGray1
 import com.example.trackt.ui.theme.TracktPurple11
 import com.example.trackt.ui.theme.TracktPurple2
@@ -239,14 +240,21 @@ fun SignupForm(userUIState: SignupUIState,
             .fillMaxWidth()
             .padding(top = 8.dp)
         ) {
-            Text(
-                text = "By creating an account, you agree with our terms",
-                fontFamily = Caudex,
-                fontSize = 10.sp,
-                textAlign = TextAlign.Left,
-                color = Black,
-                letterSpacing = (-0.41).sp
-            )
+            if (userUIState.status == false){
+                Icon(painter = painterResource(id = R.drawable.error_icon), contentDescription = "error icon")
+                Spacer(modifier = Modifier.width(8.dp))
+                userUIState.message?.let { Text(text = it, fontFamily = Caudex, fontSize = 12.sp, textAlign = TextAlign.Left, color = TracktError) }
+            }
+            else {
+                Text(
+                    text = "By creating an account, you agree with our terms",
+                    fontFamily = Caudex,
+                    fontSize = 10.sp,
+                    textAlign = TextAlign.Left,
+                    color = Black,
+                    letterSpacing = (-0.41).sp
+                )
+            }
         }
         Row( modifier = Modifier
             .fillMaxWidth()
