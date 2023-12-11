@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CardColors
@@ -255,6 +256,11 @@ fun LoginForm(loginUIState: LoginUIState,
                     fontFamily = Caudex,
                     fontSize = 16.sp,
                     textAlign = TextAlign.Center)
+
+                if (loginUIState.isLoading){
+                    Spacer(modifier = Modifier.width(8.dp))
+                    CircularProgressIndicator(modifier = Modifier.size(16.dp), color = Color.White)
+                }
             }
         }
     }

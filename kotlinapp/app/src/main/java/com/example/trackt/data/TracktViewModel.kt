@@ -129,6 +129,7 @@ class TracktViewModel(
             withContext(Dispatchers.IO) {
                 try {
                     loginUIState = loginUIState.copy(isLoading = true)
+
                     val loginResponse =
                         usersRepository.getUser(loginUIState.userLoginDetails.toLogin())
                     val status = loginResponse.body()!!.status
@@ -155,6 +156,9 @@ class TracktViewModel(
                 }
                 catch (e: Exception) {
                     Log.e("Coroutine Exception", e.toString())
+                }
+                finally {
+                    loginUIState = loginUIState.copy(isLoading = false)
                 }
             }
         }
