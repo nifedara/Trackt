@@ -90,11 +90,24 @@ class TracktViewModel(
     //create a new user
     fun createUser() {
         viewModelScope.launch {
-            val signupResponse = usersRepository.createUser(signupUIState.userDetails.toUser())
-            val status = signupResponse.body()!!.status
-            val message = signupResponse.body()!!.message
+            try {
+                signupUIState = signupUIState.copy(isLoading = true)
 
-            signupUIState = signupUIState.copy(status = status, message = message)
+                val signupResponse = usersRepository.createUser(signupUIState.userDetails.toUser())
+                val status = signupResponse.body()!!.status
+                val message = signupResponse.body()!!.message
+
+                signupUIState = signupUIState.copy(status = status, message = message)
+                if (!status) { //reset isLoading
+                    signupUIState = signupUIState.copy(isLoading = false)
+                }
+            }
+            catch (e: Exception) {
+                Log.e("Coroutine Exception", e.toString())
+            }
+            finally {
+                signupUIState = signupUIState.copy(isLoading = false)
+            }
         }
     }
 
@@ -115,6 +128,7 @@ class TracktViewModel(
         viewModelScope.launch {
             withContext(Dispatchers.IO) {
                 try {
+                    loginUIState = loginUIState.copy(isLoading = true)
                     val loginResponse =
                         usersRepository.getUser(loginUIState.userLoginDetails.toLogin())
                     val status = loginResponse.body()!!.status
@@ -203,7 +217,8 @@ data class SignupUIState(
     val userDetails: UserFullDetails = UserFullDetails(),
     var isEntryValid: Boolean = false,
     var status: Boolean? = null,
-    var message: String? = null
+    var message: String? = null,
+    var isLoading: Boolean = false
 )
 data class UserFullDetails(
     var name: String = "",
@@ -224,6 +239,7 @@ data class LoginUIState(
     var isEntryValid : Boolean = false,
     var status: Boolean? = null,
     var message: String? = null,
+    var isLoading: Boolean = false,
     val isUserLoggedIn: Boolean = false,
     var token: String,
     val userName: String? = ""

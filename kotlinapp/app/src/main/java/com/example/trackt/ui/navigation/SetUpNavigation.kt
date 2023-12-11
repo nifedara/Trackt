@@ -25,7 +25,11 @@ fun SetUpNavigationGraph(navController: NavHostController) {
         //signup screen
         composable(route = SignupScreen.route)
         {
-            SignupScreen(navController = navController)
+            SignupScreen(navController = navController,
+                         onUserSignUp = {
+                             navController.popBackStack()
+                             navController.navigate(LoginScreen.route)
+                         })
         }
         //login screen
         composable(route = LoginScreen.route)

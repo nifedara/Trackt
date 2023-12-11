@@ -39,6 +39,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -78,7 +79,7 @@ fun LoginScreen(onUserLogin: () -> Unit,
     val currentOnUserLogin by rememberUpdatedState(onUserLogin)
     LaunchedEffect(viewModel, lifecycle){
         snapshotFlow{ viewModel.loginUIState }
-            .filter{ it.isUserLoggedIn }
+            .filter{ it.status == true }
             .flowWithLifecycle(lifecycle)
             .collect { currentOnUserLogin() }
 }
@@ -178,10 +179,12 @@ fun LoginForm(loginUIState: LoginUIState,
                 )
                 TextField(value = loginUIState.userLoginDetails.email, onValueChange = {onValueChange(loginUIState.userLoginDetails.copy(email = it))},
                     shape = MaterialTheme.shapes.small,
-                    modifier = Modifier.height(50.dp),
+                    modifier = Modifier.height(52.dp),
                     colors = TextFieldDefaults.colors(focusedContainerColor = TracktPurple3, unfocusedContainerColor = TracktGray1,
                         cursorColor = TracktPurple2, focusedTextColor = TracktPurple11, unfocusedTextColor = Color.Black,
-                        focusedIndicatorColor = Color.Transparent, unfocusedIndicatorColor = Color.Transparent)
+                        focusedIndicatorColor = Color.Transparent, unfocusedIndicatorColor = Color.Transparent),
+                    textStyle = TextStyle(fontSize = 15.sp, fontFamily = Caudex, lineHeight = 10.sp),
+                    singleLine = true,
                 )
             }
         }
@@ -199,10 +202,12 @@ fun LoginForm(loginUIState: LoginUIState,
                 )
                 TextField(value = loginUIState.userLoginDetails.password, onValueChange = {onValueChange(loginUIState.userLoginDetails.copy(password = it))},
                     shape = MaterialTheme.shapes.small,
-                    modifier = Modifier.height(50.dp),
+                    modifier = Modifier.height(52.dp),
                     colors = TextFieldDefaults.colors(focusedContainerColor = TracktPurple3, unfocusedContainerColor = TracktGray1,
                         cursorColor = TracktPurple2, focusedTextColor = TracktPurple11, unfocusedTextColor = Color.Black,
-                        focusedIndicatorColor = Color.Transparent, unfocusedIndicatorColor = Color.Transparent)
+                        focusedIndicatorColor = Color.Transparent, unfocusedIndicatorColor = Color.Transparent),
+                    textStyle = TextStyle(fontSize = 15.sp, fontFamily = Caudex, lineHeight = 10.sp),
+                    singleLine = true,
                 )
             }
         }
@@ -227,7 +232,7 @@ fun LoginForm(loginUIState: LoginUIState,
                 Icon(painter = painterResource(id = R.drawable.error_icon), contentDescription = "error icon",
                     modifier = Modifier.size(12.dp, 12.dp), tint = TracktError)
                 Spacer(modifier = Modifier.width(8.dp))
-                loginUIState.message?.let { Text(text = it, fontFamily = Caudex, fontSize = 10.sp, textAlign = TextAlign.Left, color = TracktError) }
+                loginUIState.message?.let { Text(text = it, fontFamily = Caudex, fontSize = 12.sp, textAlign = TextAlign.Left, color = TracktError) }
             }
         }
         Row( modifier = Modifier

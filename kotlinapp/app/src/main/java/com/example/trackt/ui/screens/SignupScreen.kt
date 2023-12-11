@@ -17,6 +17,7 @@ import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Divider
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -30,6 +31,10 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberUpdatedState
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -37,10 +42,13 @@ import androidx.compose.ui.graphics.Color.Companion.Black
 import androidx.compose.ui.graphics.Color.Companion.Blue
 import androidx.compose.ui.graphics.Color.Companion.White
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.example.trackt.R
@@ -57,6 +65,7 @@ import com.example.trackt.ui.theme.TracktPurple11
 import com.example.trackt.ui.theme.TracktPurple2
 import com.example.trackt.ui.theme.TracktPurple3
 import com.example.trackt.ui.theme.TracktWhite1
+import kotlinx.coroutines.flow.filter
 
 object SignupScreen : NavigationDestination {
     override val route = "signup"
@@ -65,9 +74,18 @@ object SignupScreen : NavigationDestination {
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
-fun SignupScreen(navController: NavHostController,
+fun SignupScreen(onUserSignUp: () -> Unit,
+                 navController: NavHostController,
                  viewModel: TracktViewModel = viewModel(factory = AppViewModelProvider.createViewModelInstance())
 ) {
+    val lifecycle = LocalLifecycleOwner.current.lifecycle
+    val currentOnUserSignUp by rememberUpdatedState(newValue = onUserSignUp)
+    LaunchedEffect(viewModel, lifecycle){
+        snapshotFlow { viewModel.signupUIState }
+            .filter { it.status == true }
+            .flowWithLifecycle(lifecycle)
+            .collect {currentOnUserSignUp()}
+    }
 
     Scaffold(
         topBar = {
@@ -113,8 +131,6 @@ fun SignupScreen(navController: NavHostController,
                             SignupForm(userUIState = viewModel.signupUIState,
                                 onValueChange = viewModel::updateUiState) {
                                 viewModel.createUser()
-                                navController.popBackStack()
-                                navController.navigate(LoginScreen.route)
                             }
                             SignupOther{
                                 navController.popBackStack()
@@ -166,10 +182,12 @@ fun SignupForm(userUIState: SignupUIState,
                 )
                 TextField(value = userUIState.userDetails.name, onValueChange = {onValueChange(userUIState.userDetails.copy(name = it))},
                     shape = MaterialTheme.shapes.small,
-                    modifier = Modifier.height(50.dp),
+                    modifier = Modifier.height(52.dp),
                     colors = TextFieldDefaults.colors(focusedContainerColor = TracktPurple3, unfocusedContainerColor = TracktGray1,
                         cursorColor = TracktPurple2, focusedTextColor = TracktPurple11, unfocusedTextColor = Black,
-                        focusedIndicatorColor = Color.Transparent, unfocusedIndicatorColor = Color.Transparent)
+                        focusedIndicatorColor = Color.Transparent, unfocusedIndicatorColor = Color.Transparent),
+                    textStyle = TextStyle(fontSize = 15.sp, fontFamily = Caudex, lineHeight = 6.sp),
+                    singleLine = true,
                 )
             }
         }
@@ -187,10 +205,12 @@ fun SignupForm(userUIState: SignupUIState,
                 )
                 TextField(value = userUIState.userDetails.email, onValueChange = {onValueChange(userUIState.userDetails.copy(email = it))},
                     shape = MaterialTheme.shapes.small,
-                    modifier = Modifier.height(50.dp),
+                    modifier = Modifier.height(52.dp),
                     colors = TextFieldDefaults.colors(focusedContainerColor = TracktPurple3, unfocusedContainerColor = TracktGray1,
                         cursorColor = TracktPurple2, focusedTextColor = TracktPurple11, unfocusedTextColor = Black,
-                        focusedIndicatorColor = Color.Transparent, unfocusedIndicatorColor = Color.Transparent)
+                        focusedIndicatorColor = Color.Transparent, unfocusedIndicatorColor = Color.Transparent),
+                    textStyle = TextStyle(fontSize = 15.sp, fontFamily = Caudex),
+                    singleLine = true,
                 )
             }
         }
@@ -208,10 +228,12 @@ fun SignupForm(userUIState: SignupUIState,
                 )
                 TextField(value = userUIState.userDetails.password, onValueChange = {onValueChange(userUIState.userDetails.copy(password = it))},
                     shape = MaterialTheme.shapes.small,
-                    modifier = Modifier.height(50.dp),
+                    modifier = Modifier.height(52.dp),
                     colors = TextFieldDefaults.colors(focusedContainerColor = TracktPurple3, unfocusedContainerColor = TracktGray1,
                         cursorColor = TracktPurple2, focusedTextColor = TracktPurple11, unfocusedTextColor = Black,
-                        focusedIndicatorColor = Color.Transparent, unfocusedIndicatorColor = Color.Transparent)
+                        focusedIndicatorColor = Color.Transparent, unfocusedIndicatorColor = Color.Transparent),
+                    textStyle = TextStyle(fontSize = 15.sp, fontFamily = Caudex, lineHeight = 10.sp),
+                    singleLine = true,
                 )
             }
         }
@@ -229,19 +251,22 @@ fun SignupForm(userUIState: SignupUIState,
                 )
                 TextField(value = userUIState.userDetails.confirmPassword, onValueChange = {onValueChange(userUIState.userDetails.copy(confirmPassword = it))},
                     shape = MaterialTheme.shapes.small,
-                    modifier = Modifier.height(50.dp),
+                    modifier = Modifier.height(52.dp),
                     colors = TextFieldDefaults.colors(focusedContainerColor = TracktPurple3, unfocusedContainerColor = TracktGray1,
                         cursorColor = TracktPurple2, focusedTextColor = TracktPurple11, unfocusedTextColor = Black,
-                        focusedIndicatorColor = Color.Transparent, unfocusedIndicatorColor = Color.Transparent)
+                        focusedIndicatorColor = Color.Transparent, unfocusedIndicatorColor = Color.Transparent),
+                    textStyle = TextStyle(fontSize = 15.sp, fontFamily = Caudex, lineHeight = 10.sp),
+                    singleLine = true,
                 )
             }
         }
         Row( modifier = Modifier
             .fillMaxWidth()
-            .padding(top = 8.dp)
+            .padding(top = 10.dp)
         ) {
             if (userUIState.status == false){
-                Icon(painter = painterResource(id = R.drawable.error_icon), contentDescription = "error icon")
+                Icon(painter = painterResource(id = R.drawable.error_icon), contentDescription = "error icon",
+                     modifier = Modifier.size(12.dp, 12.dp), tint = TracktError)
                 Spacer(modifier = Modifier.width(8.dp))
                 userUIState.message?.let { Text(text = it, fontFamily = Caudex, fontSize = 12.sp, textAlign = TextAlign.Left, color = TracktError) }
             }
@@ -276,6 +301,11 @@ fun SignupForm(userUIState: SignupUIState,
                     fontFamily = Caudex,
                     fontSize = 16.sp,
                     textAlign = TextAlign.Center)
+
+                if (userUIState.isLoading){
+                    Spacer(modifier = Modifier.width(8.dp))
+                    CircularProgressIndicator(modifier = Modifier.size(16.dp), color = White)
+                }
             }
         }
     }
