@@ -51,11 +51,13 @@ builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseNpgsql
      x => x.MigrationsHistoryTable("__efmigrationshistory"))); // options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")))
 builder.Services.AddIdentity<TracktUser, IdentityRole>(options =>
 {
-    options.User.RequireUniqueEmail = true;
     options.Password.RequireDigit = true;
     options.Password.RequireUppercase = true;
     options.Password.RequireLowercase = true;
     options.Password.RequireNonAlphanumeric = false;
+
+    options.User.RequireUniqueEmail = true;
+    options.SignIn.RequireConfirmedEmail = true;
 }).AddEntityFrameworkStores<ApplicationDbContext>();
 builder.Services.AddAuthentication(options =>
 {
