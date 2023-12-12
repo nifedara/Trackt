@@ -1,7 +1,5 @@
 package com.example.trackt.ui.screens
 
-//noinspection UsingMaterialAndMaterial3Libraries
-//noinspection UsingMaterialAndMaterial3Libraries
 import android.annotation.SuppressLint
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
@@ -70,7 +68,6 @@ import kotlinx.coroutines.flow.filter
 object SignupScreen : NavigationDestination {
     override val route = "signup"
 }
-
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
@@ -143,6 +140,7 @@ fun SignupScreen(onUserSignUp: () -> Unit,
         }
     }
 }
+
 
 @Composable
 fun SignupForm(userUIState: SignupUIState,
