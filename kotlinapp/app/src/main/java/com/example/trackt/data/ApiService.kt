@@ -39,7 +39,7 @@ interface ApiService {
 
 object RetrofitHelper {
 
-    private const val baseUrl = "http://10.65.10.34:5053/"
+    private const val baseUrl = "http://10.65.10.132/"
 
     private fun getInstance(): Retrofit {
         return Retrofit.Builder().baseUrl(baseUrl)

@@ -13,10 +13,10 @@ sealed class BottomNavRoute(
         icon = R.drawable.travels
     )
 
-    data object Goals : BottomNavRoute(
-        route = "goals",
-        title = "goals",
-        icon = R.drawable.goals
+    data object Explore : BottomNavRoute(
+        route = "explore",
+        title = "explore",
+        icon = R.drawable.explore
     )
 
     data object Profile : BottomNavRoute(

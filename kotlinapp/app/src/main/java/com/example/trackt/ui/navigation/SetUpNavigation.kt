@@ -11,10 +11,11 @@ import com.example.trackt.ui.screens.WelcomeScreen
 
 //The App's Navigation
 @Composable
-fun SetUpNavigationGraph(navController: NavHostController) {
+fun SetUpNavigationGraph(navController: NavHostController,
+                         startDestination: String) {
     NavHost(
         navController = navController,
-        startDestination = WelcomeScreen.route
+        startDestination = startDestination  // was WelcomeScreen.route
     )
     {
         //welcome(onboard) screen

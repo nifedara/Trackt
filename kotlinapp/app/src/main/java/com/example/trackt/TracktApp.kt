@@ -1,6 +1,7 @@
 package com.example.trackt
 
 import android.app.Application
+import dagger.hilt.android.HiltAndroidApp
 
-class TracktApp: Application()  {
-}
+@HiltAndroidApp
+class TracktApp: Application()

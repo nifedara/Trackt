@@ -140,6 +140,7 @@ fun CreateDestinationScreen(navController: NavHostController,
                                 onValueChange = viewModel::updateDestinationForm,
                                 onClick = {
                                     Log.v("Button clicked", "true")
+
                                     if (token != null) {
                                         viewModel.createDestination(token)
                                         Log.v("Entered button", "true")
@@ -248,27 +249,8 @@ fun CreateDestinationForm(destinationFormState: DestinationDetails,
                     Log.v("image file path", file.toString())
                     Log.v("image file absolute path", file.absolutePath)
 
-                    //val file = File.createTempFile("image", ".jpeg")
-                    //val file = File.createTempFile("image", ".jpeg", context.cacheDir)
-                    //org.apache.commons.io.FileUtils.copyInputStreamToFile(stream,file)
-                    //onValueChange(destinationFormState.copy(image = file))
-                    //Log.v("image uri", imageUri.toString())
-                    //Log.v("image file path", file.absolutePath)
-
-                    //val imgFile = getRealPathFromURI(imageUri, context)?.let { File(it) }
-                    //onValueChange(destinationFormState.copy(image = imgFile))
-                    //val imgFile = createCopyAndReturnRealPath(context, imageUri)
-                    //Log.v("new image file path", imgFile.toString())
-
-//                    val imgFile = File(context.cacheDir, "image.jpeg")
-//                    file.createNewFile()
-//                    file.outputStream().use{
-//                        context.uri
-//                    }
-
                     Column(modifier = Modifier.fillMaxWidth()) {
                         AsyncImage(model = imageUri,
-                            //onState = {onValueChange(destinationFormState.copy(image = imageUri))},
                             contentDescription = null,
                             contentScale = ContentScale.None)
                     }

@@ -2,4 +2,11 @@
 <resources>
 
     <style name="Theme.Trackt" parent="android:Theme.Material.Light.NoActionBar" />
+
+    <style name="Theme.TracktSplashScreen" parent="Theme.SplashScreen">
+        <item name="windowSplashScreenBackground">@color/White</item>
+        <item name="windowSplashScreenAnimatedIcon">@drawable/l</item>
+        <item name="windowSplashScreenAnimationDuration">600</item>
+        <item name="postSplashScreenTheme">@style/Theme.Trackt</item>
+    </style>
 </resources>

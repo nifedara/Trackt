@@ -80,7 +80,7 @@ fun LoginScreen(onUserLogin: () -> Unit,
     val currentOnUserLogin by rememberUpdatedState(onUserLogin)
     LaunchedEffect(viewModel, lifecycle){
         snapshotFlow{ viewModel.loginUIState }
-            .filter{ it.status == true }
+            .filter{ it.status == true } //if the status response from the API is true, take the user to the next screen
             .flowWithLifecycle(lifecycle)
             .collect { currentOnUserLogin() }
 }
@@ -117,8 +117,10 @@ fun LoginScreen(onUserLogin: () -> Unit,
                     ElevatedCard(
                         elevation = CardDefaults.cardElevation(defaultElevation = 1.4.dp),
                         modifier = Modifier.fillMaxWidth(),
-                        colors = CardColors(containerColor = Color.White, disabledContainerColor = Color.White,
-                            contentColor = Color.White, disabledContentColor = Color.White
+                        colors = CardColors(containerColor = Color.White,
+                            disabledContainerColor = Color.White,
+                            contentColor = Color.White,
+                            disabledContentColor = Color.White
                         )
                     ) {
                         Column(
@@ -180,13 +182,21 @@ fun LoginForm(loginUIState: LoginUIState,
                     textAlign = TextAlign.Left,
                     color = TracktPurple11
                 )
-                TextField(value = loginUIState.userLoginDetails.email, onValueChange = {onValueChange(loginUIState.userLoginDetails.copy(email = it))},
+                TextField(value = loginUIState.userLoginDetails.email,
+                    onValueChange = {onValueChange(loginUIState.userLoginDetails.copy(email = it))},
                     shape = MaterialTheme.shapes.small,
                     modifier = Modifier.height(52.dp),
-                    colors = TextFieldDefaults.colors(focusedContainerColor = TracktPurple3, unfocusedContainerColor = TracktGray1,
-                        cursorColor = TracktPurple2, focusedTextColor = TracktPurple11, unfocusedTextColor = Color.Black,
-                        focusedIndicatorColor = Color.Transparent, unfocusedIndicatorColor = Color.Transparent),
-                    textStyle = TextStyle(fontSize = 15.sp, fontFamily = Caudex, lineHeight = 10.sp),
+                    colors = TextFieldDefaults.colors(
+                        focusedContainerColor = TracktPurple3,
+                        unfocusedContainerColor = TracktGray1,
+                        cursorColor = TracktPurple2,
+                        focusedTextColor = TracktPurple11,
+                        unfocusedTextColor = Color.Black,
+                        focusedIndicatorColor = Color.Transparent,
+                        unfocusedIndicatorColor = Color.Transparent),
+                    textStyle = TextStyle(fontSize = 15.sp,
+                        fontFamily = Caudex,
+                        lineHeight = 10.sp),
                     singleLine = true,
                 )
             }
@@ -203,13 +213,22 @@ fun LoginForm(loginUIState: LoginUIState,
                     textAlign = TextAlign.Left,
                     color = TracktPurple11
                 )
-                TextField(value = loginUIState.userLoginDetails.password, onValueChange = {onValueChange(loginUIState.userLoginDetails.copy(password = it))},
+                TextField(value = loginUIState.userLoginDetails.password,
+                    onValueChange = {onValueChange(loginUIState.userLoginDetails.copy(password = it))},
                     shape = MaterialTheme.shapes.small,
                     modifier = Modifier.height(52.dp),
-                    colors = TextFieldDefaults.colors(focusedContainerColor = TracktPurple3, unfocusedContainerColor = TracktGray1,
-                        cursorColor = TracktPurple2, focusedTextColor = TracktPurple11, unfocusedTextColor = Color.Black,
-                        focusedIndicatorColor = Color.Transparent, unfocusedIndicatorColor = Color.Transparent),
-                    textStyle = TextStyle(fontSize = 15.sp, fontFamily = Caudex, lineHeight = 10.sp),
+                    colors = TextFieldDefaults.colors(
+                        focusedContainerColor = TracktPurple3,
+                        unfocusedContainerColor = TracktGray1,
+                        cursorColor = TracktPurple2,
+                        focusedTextColor = TracktPurple11,
+                        unfocusedTextColor = Color.Black,
+                        focusedIndicatorColor = Color.Transparent,
+                        unfocusedIndicatorColor = Color.Transparent),
+                    textStyle = TextStyle(
+                        fontSize = 15.sp,
+                        fontFamily = Caudex,
+                        lineHeight = 10.sp),
                     singleLine = true,
                 )
             }
@@ -231,6 +250,7 @@ fun LoginForm(loginUIState: LoginUIState,
             .fillMaxWidth()
             .padding(top = 10.dp)
         ) {
+            //shows the user the error message if the status is false
             if (loginUIState.status == false){
                 Icon(painter = painterResource(id = R.drawable.error_icon), contentDescription = "error icon",
                     modifier = Modifier.size(12.dp, 12.dp), tint = TracktError)

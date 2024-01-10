@@ -79,7 +79,7 @@ fun SignupScreen(onUserSignUp: () -> Unit,
     val currentOnUserSignUp by rememberUpdatedState(newValue = onUserSignUp)
     LaunchedEffect(viewModel, lifecycle){
         snapshotFlow { viewModel.signupUIState }
-            .filter { it.status == true }
+            .filter { it.status == true } //if the response from the API is true, take the user to the next screen
             .flowWithLifecycle(lifecycle)
             .collect {currentOnUserSignUp()}
     }
@@ -262,6 +262,7 @@ fun SignupForm(userUIState: SignupUIState,
             .fillMaxWidth()
             .padding(top = 10.dp)
         ) {
+            //shows the user the error message if the status response is false
             if (userUIState.status == false){
                 Icon(painter = painterResource(id = R.drawable.error_icon), contentDescription = "error icon",
                      modifier = Modifier.size(12.dp, 12.dp), tint = TracktError)

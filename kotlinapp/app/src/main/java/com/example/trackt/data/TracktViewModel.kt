@@ -24,7 +24,8 @@ import java.io.File
 
 class TracktViewModel(
     private val usersRepository: UsersRepository,
-    private val destinationRepository: DestinationRepository): ViewModel() {
+    private val destinationRepository: DestinationRepository): ViewModel()
+{
 
     var signupUIState by mutableStateOf(SignupUIState()) //for signup
     var loginUIState by mutableStateOf(LoginUIState(token = "")) //for login
@@ -32,6 +33,15 @@ class TracktViewModel(
     var destinationUIState by mutableStateOf(DestinationUIState()) //for travels
 
     private var yourToken: String? = null
+
+
+    //Save Onboarding State
+    fun saveOnboardingState(completed: Boolean, context: Context){
+        viewModelScope.launch(Dispatchers.IO) {
+            val dataStoreRepository = DataStoreRepository(context)
+            dataStoreRepository.saveOnboardingState(completed = completed)
+        }
+    }
 
 
     //create new destination
@@ -63,6 +73,7 @@ class TracktViewModel(
                 Log.v("image contains this:", destinationUIState.destinationDetails.image.toString())
                 Log.v("i got here", true.toString())
                 Log.v("destination response", createDestinationResponse.toString())
+
                 if (createDestinationResponse != null) {
                     Log.v("destination response status", createDestinationResponse.body()?.status.toString())
                 }
@@ -112,7 +123,7 @@ class TracktViewModel(
     }
 
 
-    //log in user
+    //LOG IN USER
     private fun validateLoginInput(uiState: UserLoginDetails = loginUIState.userLoginDetails): Boolean {
         return with(uiState) {
             email.isNotBlank()  && password.isNotBlank()
@@ -124,7 +135,7 @@ class TracktViewModel(
     }
     //get user
     fun getUser(context: Context){
-        val sessionManger = SessionManager(context)
+        val sessionManger = SessionManager(context) //provide context for the session manager
         viewModelScope.launch {
             withContext(Dispatchers.IO) {
                 try {
@@ -150,7 +161,7 @@ class TracktViewModel(
                         Log.v("Login token", "$token Hello, something happened")
                         Log.v("loginUIState", "$loginUIState Hello, login UI State")
 
-                        sessionManger.saveAuthToken(token)
+                        sessionManger.saveAuthToken(token) //set token to the session manager
                         setToken(token)
                     }
                 }
@@ -164,45 +175,24 @@ class TracktViewModel(
         }
     }
 
-//    private val sessionManager: SessionManager = SessionManager(sContext)
-//    private val yourToken = sessionManager.fetchAuthToken()
-
-//    val travelsListUIState: StateFlow<TravelsUIState> =
-//        destinationRepository.getDestinations(yourToken).map { TravelsUIState(it) }
-//            .stateIn(
-//                scope = viewModelScope,
-//                started = SharingStarted.WhileSubscribed(TIMEOUT_MILLIS),
-//                initialValue = TravelsUIState()
-//            )
-//    companion object{
-//        private const val TIMEOUT_MILLIS = 5_000L
-//    }
-
     //display destinations
     private val _travelsState = MutableStateFlow(TravelsUIState())
     val travelsState: StateFlow<TravelsUIState> = _travelsState.asStateFlow()
-    //private val _travelsState = MutableStateFlow<TravelsUIState?>(null)
 
     //get destinations
     fun getDestinations(token: String) {
         viewModelScope.launch {
-            //val getDestinationsResponse = destinationRepository.getDestinations(loginUIState.token)
             val getDestinationsResponse = destinationRepository.getDestinations((token))
             val destinations = getDestinationsResponse.data
             _travelsState.value = TravelsUIState(travelsList = destinations)
         }
     }
 
-//    init {
-//        if (loginUIState.token.isNotBlank()){
-//            getDestinations()
-//        }
-//    }
-
     private fun setToken(token: String?){
         yourToken = token
     }
 }
+
 
 //create destination UI state
 data class DestinationUIState(
@@ -220,7 +210,7 @@ data class DestinationDetails(
 data class SignupUIState(
     val userDetails: UserFullDetails = UserFullDetails(),
     var isEntryValid: Boolean = false,
-    var status: Boolean? = null,
+    var status: Boolean? = null, //status is from the API response
     var message: String? = null,
     var isLoading: Boolean = false
 )
@@ -241,7 +231,7 @@ data class UserFullDetails(
 data class LoginUIState(
     val userLoginDetails: UserLoginDetails = UserLoginDetails(),
     var isEntryValid : Boolean = false,
-    var status: Boolean? = null,
+    var status: Boolean? = null, //status is from the API response
     var message: String? = null,
     var isLoading: Boolean = false,
     val isUserLoggedIn: Boolean = false,
@@ -261,10 +251,10 @@ data class UserLoginDetails(
 
 //Travel UI state
 data class TravelsUIState(
-    var travelsList: List<Models.DestinationResponse.Destination> = emptyList(),
+    var travelsList: List<Models.DestinationResponse.Destination>
+    = emptyList(),
     val userName: String? = ""
 )
-
 
 object AppViewModelProvider {
 

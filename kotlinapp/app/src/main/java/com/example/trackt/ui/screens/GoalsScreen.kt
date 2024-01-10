@@ -16,12 +16,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.example.trackt.TopBar
-import com.example.trackt.ui.navigation.NavigationDestination
 
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
-fun GoalsScreen(
+fun ExploreScreen(
 ) {
     Scaffold(
         topBar = {
