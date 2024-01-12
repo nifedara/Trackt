@@ -11,7 +11,7 @@ namespace webapi.Models
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
-
+                 
                 //modelBuilder.Entity<Destination>()
                 //    .HasKey(k => k.UserId);
 
@@ -39,6 +39,5 @@ namespace webapi.Models
 
         }
         public DbSet<Destination> Destinations { get; set; }
-
     }
 }

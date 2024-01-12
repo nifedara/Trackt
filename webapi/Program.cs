@@ -7,17 +7,35 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.OpenApi.Models;
 using System.Security.Claims;
 using System.IdentityModel.Tokens.Jwt;
+using webapi.Settings;
+using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 
 builder.Services.AddControllers();
-//builder.WebHost.UseUrls("10.65.10.97");
 builder.Services.Configure<ApiBehaviorOptions>(options => options.SuppressModelStateInvalidFilter = true);
-var cloudinaryCloudName = builder.Configuration["Cloudinary:CloudName"];
-var cloudinaryApiKey = builder.Configuration["Cloudinary:ApiKey"];
-var cloudinaryApiSecret = builder.Configuration["Cloudinary:ApiSecret"];
+
+//CLOUDINARY
+builder.Services.Configure<CloudinarySettings>(builder.Configuration.GetSection("CloudinarySettings"));
+
+//MAIL Settings
+builder.Services.Configure<MailSettings>(builder.Configuration.GetSection("MailSettings"));
+
+//IMail & Mail Services
+//builder.Services.AddTransient(typeof(IMailService<>), typeof(MailService<>);
+builder.Services.AddTransient<webapi.Services.IMailService, webapi.Services.MailService>();
+
+//Logging
+builder.Host.UseSerilog((ctx, lc) =>
+{
+    lc.ReadFrom.Configuration(ctx.Configuration);
+    lc.WriteTo.File("logs/Trackt-.txt", rollingInterval: RollingInterval.Day,
+        outputTemplate: "{Timestamp:yyyy-MM-dd HH:mm:ss.fff} [{Level:u3}] {Message:lj}{NewLine}{Exception}");
+
+}, writeToProviders: true); //lc- logger configuration, ctx- context
+
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
@@ -58,7 +76,9 @@ builder.Services.AddIdentity<TracktUser, IdentityRole>(options =>
 
     options.User.RequireUniqueEmail = true;
     options.SignIn.RequireConfirmedEmail = true;
-}).AddEntityFrameworkStores<ApplicationDbContext>();
+    //options.Tokens.EmailConfirmationTokenProvider
+}).AddEntityFrameworkStores<ApplicationDbContext>().AddDefaultTokenProviders();
+
 builder.Services.AddAuthentication(options =>
 {
     options.DefaultAuthenticateScheme =

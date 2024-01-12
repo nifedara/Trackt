@@ -38,7 +38,7 @@ namespace webapi.Controllers
                 var valid = user != null && ModelState.IsValid;
                 if (valid)
                 {
-                    // get the uploaded image
+                    //get the uploaded image
                     var imgfile = input.Image;
                     //check that it is an image
                     var anImage = imgfile!.ContentType.StartsWith("image");
@@ -46,9 +46,9 @@ namespace webapi.Controllers
                     if (anImage)
                     {
                         // Cloudinary
-                        var cloudinaryCloudName = _configuration!["Cloudinary:CloudName"];
-                        var cloudinaryApiKey = _configuration["Cloudinary:ApiKey"];
-                        var cloudinaryApiSecret = _configuration["Cloudinary:ApiSecret"];
+                        var cloudinaryCloudName = _configuration!["CloudinarySettings:CloudName"];
+                        var cloudinaryApiKey = _configuration["CloudinarySettings:ApiKey"];
+                        var cloudinaryApiSecret = _configuration["CloudinarySettings:ApiSecret"];
 
                         // Handle image upload to Cloudinary
                         Account account = new(

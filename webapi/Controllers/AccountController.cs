@@ -5,6 +5,11 @@ using Microsoft.AspNetCore.Mvc;
 using webapi.Models;
 using webapi.DTO;
 using System.Security.Claims;
+using Microsoft.AspNetCore.WebUtilities;
+using static Org.BouncyCastle.Crypto.Engines.SM2Engine;
+using System.Text;
+using webapi.Services;
+using Serilog;
 
 namespace webapi.Controllers
 {
@@ -16,15 +21,18 @@ namespace webapi.Controllers
         private readonly IConfiguration? _configuration;
         private readonly UserManager<TracktUser>? _userManager;
         private readonly SignInManager<TracktUser>? _signInManager;
+        private readonly IMailService _mailSender;
 
         public AccountController(ApplicationDbContext? context,IConfiguration? configuration,
-            UserManager<TracktUser>? userManager,SignInManager<TracktUser>? signInManager)
+            UserManager<TracktUser>? userManager,SignInManager<TracktUser>? signInManager, IMailService mailSender)
         {
             _context = context;
             _configuration = configuration;
             _userManager = userManager;
             _signInManager = signInManager;
+            _mailSender = mailSender;
         }
+
 
         [HttpPost]
         //[ResponseCache(CacheProfileName = "NoCache")] --- Fix your caching //TODO
@@ -43,10 +51,38 @@ namespace webapi.Controllers
                     var result = await _userManager!.CreateAsync(newUser, input.Password!);
                     if (result.Succeeded)
                     {
+                        //Send Email Confirmation token
+                        var token = await _userManager.GenerateEmailConfirmationTokenAsync(newUser);
+                        token = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(token));
+                        var confirmationLink = Url.Action("ConfirmEmail", "Authentication", new { userId = newUser.Id, token }, Request.Scheme);
+                        Log.Information("token => {@token}", token);
+                        Log.Information("confirmation link =>  {@confirmationLink}", confirmationLink);
+
+                        //email message
+                        var newMailRequest = new MailRequest
+                        {
+                            ToEmail = input.Email,
+                            Subject = "Confirm Email",
+                            Body = "Here is your confirmation email: " + confirmationLink,
+                        };
+
+                        //try to send email
+                        try { await _mailSender.SendEmail(newMailRequest); }
+                        catch
+                        {
+                            var res = new BaseResponse
+                            {
+                                Status = false,
+                                Message = "couldn't send a confirmation mail"
+                            };
+                            return res;
+                        }
+
+                        //response from registration
                         var response = new BaseResponse
                         {
                             Status = true,
-                            Message = $"User '{newUser.Name}' has been created."
+                            Message = $"A confirmation code has been sent to {newUser.Email}."
                         };
                         return response;
                     }
@@ -58,7 +94,6 @@ namespace webapi.Controllers
                             Message = new Exception(result.Errors.Select(e => e.Description).First()).Message
                         };
                         return response;
-                        //log later //TODO.
                     }
                 }
                 else
@@ -86,6 +121,7 @@ namespace webapi.Controllers
 
             }
         }
+
 
         [HttpPost]
         public async Task<ActionResult<BaseResponse>> Login(LoginDTO input)
@@ -168,6 +204,12 @@ namespace webapi.Controllers
                 return StatusCode(StatusCodes.Status401Unauthorized, exceptionDetails);
             }
         }
+
+
+        //[HttpGet]
+        //public async Task<ActionResult<BaseResponse>> ConfirmEmail(int code)
+        //{}
+
     }
     public class UserInfo
     {
