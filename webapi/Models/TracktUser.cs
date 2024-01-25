@@ -2,7 +2,7 @@
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.Json.Serialization;
 
-namespace webapi.Models
+namespace Trackt.Models
 {
     [Table("User")]
     public class TracktUser : IdentityUser

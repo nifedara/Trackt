@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.Json.Serialization;
 
-namespace webapi.Models
+namespace Trackt.Models
 {
     [Table("Destination")]
     public class Destination

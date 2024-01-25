@@ -5,10 +5,10 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
-using webapi.DTO;
-using webapi.Models;
+using Trackt.DTO;
+using Trackt.Models;
 
-namespace webapi.Controllers
+namespace Trackt.Controllers
 {
     [Authorize] // This attribute ensures that only authenticated users can access these endpoints
     [Route("api/[controller]/[action]")]
@@ -28,7 +28,7 @@ namespace webapi.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult<BaseResponse>> Create([FromForm] DestinationDTO input)
+        public async Task<ActionResult<StatusResponse>> Create([FromForm] CreateDestination input)
         {
             try
             {
@@ -79,7 +79,7 @@ namespace webapi.Controllers
                         _context?.Destinations.Add(newDestination);
                         await _context!.SaveChangesAsync();
 
-                        var response = new BaseResponse
+                        var response = new StatusResponse
                         {
                             Status = true,
                             Message = $"Destination '{input.DestinationName}' has been created."
@@ -89,7 +89,7 @@ namespace webapi.Controllers
                     }
                     else
                     {
-                        var response = new BaseResponse
+                        var response = new StatusResponse
                         {
                             Status = false,
                             Message = "Invalid file type. Please upload an image."
@@ -104,7 +104,7 @@ namespace webapi.Controllers
                         Type = "https://tools.ietf.org/html/rfc7231#section-6.5.1",
                         Status = StatusCodes.Status400BadRequest
                     };
-                    var response = new BaseResponse
+                    var response = new StatusResponse
                     {
                         Status = valid,
                         Message = details.Detail
@@ -113,7 +113,7 @@ namespace webapi.Controllers
                     //return new BadRequestObjectResult(details);
                 }
             }
-            catch (Exception ex) 
+            catch (Exception ex)
             {
                 var exceptionDetails = new ProblemDetails
                 {
@@ -123,11 +123,11 @@ namespace webapi.Controllers
                 };
                 return StatusCode(StatusCodes.Status500InternalServerError, exceptionDetails);
             }
-            
+
         }
 
         [HttpGet]
-        public async Task<ActionResult<BaseResponse>> Get(int? destinationId)
+        public async Task<ActionResult<StatusResponse>> Get(int? destinationId)
         {
             try
             {
@@ -142,7 +142,7 @@ namespace webapi.Controllers
                     var valid = destination != null;
                     if (valid)
                     {
-                        var response = new BaseResponse
+                        var response = new StatusResponse
                         {
                             Status = true,
                             Message = "Destination...",
@@ -153,7 +153,7 @@ namespace webapi.Controllers
                     }
                     else
                     {
-                        var response = new BaseResponse
+                        var response = new StatusResponse
                         {
                             Status = true,
                             Message = StatusCodes.Status404NotFound.ToString(),
@@ -166,9 +166,9 @@ namespace webapi.Controllers
                 {
                     //all destinations
                     var destinations = _context!.Destinations.Where(u => u.UserId == userId);
-                   if (destinations == null || !await destinations.AnyAsync())
+                    if (destinations == null || !await destinations.AnyAsync())
                     {
-                        var response = new BaseResponse
+                        var response = new StatusResponse
                         {
                             Status = true,
                             Message = StatusCodes.Status404NotFound.ToString(),
@@ -176,9 +176,9 @@ namespace webapi.Controllers
                         };
                         return response;
                     }
-                   else
+                    else
                     {
-                        var response = new BaseResponse
+                        var response = new StatusResponse
                         {
                             Status = true,
                             Message = "Destinations...",
@@ -190,7 +190,7 @@ namespace webapi.Controllers
 
                 }
             }
-            catch  (Exception ex)
+            catch (Exception ex)
             {
                 var exceptionDetails = new ProblemDetails
                 {

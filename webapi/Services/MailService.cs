@@ -3,10 +3,10 @@ using MailKit.Security;
 using MailKit.Net.Smtp;
 using Microsoft.Extensions.Options;
 using MimeKit;
-using webapi.DTO;
-using webapi.Settings;
+using Trackt.DTO;
+using Trackt.Settings;
 
-namespace webapi.Services
+namespace Trackt.Services
 {
     public class MailService : IMailService
     {
@@ -19,12 +19,14 @@ namespace webapi.Services
 
         public async Task SendEmail(MailRequest mailRequest)
         {
-            var email = new MimeMessage();
+            MimeMessage mimeMessage = new();
+            var email = mimeMessage;
             email.Sender = MailboxAddress.Parse(_mailSettings.Mail);
             email.To.Add(MailboxAddress.Parse(mailRequest.ToEmail));
             email.Subject = mailRequest.Subject;
 
-            var builder = new BodyBuilder();
+            BodyBuilder bodyBuilder = new();
+            var builder = bodyBuilder;
             builder.HtmlBody = mailRequest.Body;
             email.Body = builder.ToMessageBody();
 

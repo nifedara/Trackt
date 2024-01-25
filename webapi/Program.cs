@@ -2,13 +2,14 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using webapi.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.OpenApi.Models;
 using System.Security.Claims;
 using System.IdentityModel.Tokens.Jwt;
-using webapi.Settings;
 using Serilog;
+using Trackt.Models;
+using Trackt.Settings;
+using Trackt.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -25,7 +26,7 @@ builder.Services.Configure<MailSettings>(builder.Configuration.GetSection("MailS
 
 //IMail & Mail Services
 //builder.Services.AddTransient(typeof(IMailService<>), typeof(MailService<>);
-builder.Services.AddTransient<webapi.Services.IMailService, webapi.Services.MailService>();
+builder.Services.AddTransient<IMailService, MailService>();
 
 //Logging
 builder.Host.UseSerilog((ctx, lc) =>

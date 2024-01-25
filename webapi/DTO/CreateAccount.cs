@@ -1,9 +1,11 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace webapi.DTO
+namespace Trackt.DTO
 {
-    public class LoginDTO
+    public class CreateAccount
     {
+        [Required(ErrorMessage = "{0} is required")]
+        public string? Name { get; set; }
         [Required(ErrorMessage = "{0} is required")]
         [EmailAddress]
         public string? Email { get; set; }

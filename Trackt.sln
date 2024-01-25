@@ -5,7 +5,7 @@ VisualStudioVersion = 17.6.33815.320
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{54A90642-561A-4BB1-A94E-469ADEE60C69}") = "reactapp", "reactapp\reactapp.esproj", "{43700857-9E5E-49D4-8136-E664EB318BAC}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "webapi", "webapi\webapi.csproj", "{2C174412-111C-4EB2-ADA5-04AB3B7C898B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Trackt", "webapi\Trackt.csproj", "{2C174412-111C-4EB2-ADA5-04AB3B7C898B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

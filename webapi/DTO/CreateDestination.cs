@@ -1,9 +1,9 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
 
-namespace webapi.DTO
+namespace Trackt.DTO
 {
-    public class DestinationDTO
+    public class CreateDestination
     {
         [Required]
         public string? DestinationName { get; set; }

@@ -1,19 +1,19 @@
 ﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
-namespace webapi.Models
+namespace Trackt.Models
 {
     public class ApplicationDbContext : IdentityDbContext<TracktUser>
     {
-        public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options): base(options)
+        public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options)
         {
         }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
-                 
-                //modelBuilder.Entity<Destination>()
-                //    .HasKey(k => k.UserId);
+
+            //modelBuilder.Entity<Destination>()
+            //    .HasKey(k => k.UserId);
 
             modelBuilder.Entity<TracktUser>()
                 .HasMany(u => u.Destinations)

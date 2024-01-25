@@ -1,4 +1,4 @@
-namespace webapi;
+namespace Trackt;
 
 public class WeatherForecast
 {

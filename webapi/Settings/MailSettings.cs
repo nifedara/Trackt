@@ -1,4 +1,4 @@
-﻿namespace webapi.Settings
+﻿namespace Trackt.Settings
 {
     public class MailSettings
     {

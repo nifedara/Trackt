@@ -1,4 +1,4 @@
-﻿namespace webapi.DTO
+﻿namespace Trackt.DTO
 {
     public class MailRequest
     {

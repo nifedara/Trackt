@@ -1,6 +1,6 @@
-﻿using webapi.DTO;
+﻿using Trackt.DTO;
 
-namespace webapi.Services
+namespace Trackt.Services
 {
     public interface IMailService
     {

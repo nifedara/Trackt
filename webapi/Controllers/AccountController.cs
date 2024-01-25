@@ -2,16 +2,15 @@
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using webapi.Models;
-using webapi.DTO;
 using System.Security.Claims;
 using Microsoft.AspNetCore.WebUtilities;
-using static Org.BouncyCastle.Crypto.Engines.SM2Engine;
 using System.Text;
-using webapi.Services;
 using Serilog;
+using Trackt.Models;
+using Trackt.Services;
+using Trackt.DTO;
 
-namespace webapi.Controllers
+namespace Trackt.Controllers
 {
     [Route("api/[controller]/[action]")]
     [ApiController]
@@ -23,8 +22,8 @@ namespace webapi.Controllers
         private readonly SignInManager<TracktUser>? _signInManager;
         private readonly IMailService _mailSender;
 
-        public AccountController(ApplicationDbContext? context,IConfiguration? configuration,
-            UserManager<TracktUser>? userManager,SignInManager<TracktUser>? signInManager, IMailService mailSender)
+        public AccountController(ApplicationDbContext? context, IConfiguration? configuration,
+            UserManager<TracktUser>? userManager, SignInManager<TracktUser>? signInManager, IMailService mailSender)
         {
             _context = context;
             _configuration = configuration;
@@ -36,11 +35,11 @@ namespace webapi.Controllers
 
         [HttpPost]
         //[ResponseCache(CacheProfileName = "NoCache")] --- Fix your caching //TODO
-        public async Task<ActionResult<BaseResponse>> Create(CreateAccountDTO input)
+        public async Task<ActionResult<StatusResponse>> Create(CreateAccount input)
         {
             try
             {
-                if(ModelState.IsValid)
+                if (ModelState.IsValid)
                 {
                     var newUser = new TracktUser
                     {
@@ -54,7 +53,8 @@ namespace webapi.Controllers
                         //Send Email Confirmation token
                         var token = await _userManager.GenerateEmailConfirmationTokenAsync(newUser);
                         token = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(token));
-                        var confirmationLink = Url.Action("ConfirmEmail", "Authentication", new { userId = newUser.Id, token }, Request.Scheme);
+                        var confirmationLink = Url.Action("ConfirmEmail", "Account", new { userId = newUser.Id, token }, HttpContext.Request.Scheme);
+
                         Log.Information("token => {@token}", token);
                         Log.Information("confirmation link =>  {@confirmationLink}", confirmationLink);
 
@@ -66,20 +66,10 @@ namespace webapi.Controllers
                             Body = "Here is your confirmation email: " + confirmationLink,
                         };
 
-                        //try to send email
-                        try { await _mailSender.SendEmail(newMailRequest); }
-                        catch
-                        {
-                            var res = new BaseResponse
-                            {
-                                Status = false,
-                                Message = "couldn't send a confirmation mail"
-                            };
-                            return res;
-                        }
+                        await _mailSender.SendEmail(newMailRequest);
 
                         //response from registration
-                        var response = new BaseResponse
+                        var response = new StatusResponse
                         {
                             Status = true,
                             Message = $"A confirmation code has been sent to {newUser.Email}."
@@ -88,7 +78,7 @@ namespace webapi.Controllers
                     }
                     else
                     {
-                        var response = new BaseResponse
+                        var response = new StatusResponse
                         {
                             Status = false,
                             Message = new Exception(result.Errors.Select(e => e.Description).First()).Message
@@ -100,7 +90,7 @@ namespace webapi.Controllers
                 {
                     var details = new ValidationProblemDetails(ModelState);
 
-                    var response = new BaseResponse
+                    var response = new StatusResponse
                     {
                         Status = false,
                         Message = new Exception(details.Title).Message
@@ -122,9 +112,44 @@ namespace webapi.Controllers
             }
         }
 
+        [HttpGet]
+        public async Task<ActionResult<StatusResponse>> ConfirmEmail(string userId, string? token)
+        {
+            var user = await _userManager!.FindByEmailAsync(userId);
+            if (user == null || userId == null || token == null)
+            {
+                var response = new StatusResponse
+                {
+                    Status = false,
+                    Message = "User does not exist."
+                };
+                return response;
+            }
+
+            var result = await _userManager.ConfirmEmailAsync(user, token);
+            if (result.Succeeded)
+            {
+                var response = new StatusResponse
+                {
+                    Status = true,
+                    Message = "User email confirmed."
+                };
+                return response;
+            }
+            else
+            {
+                var response = new StatusResponse
+                {
+                    Status = false,
+                    Message = "Email confirmation unsuccessful"
+                };
+                return response;
+            }
+        }
+
 
         [HttpPost]
-        public async Task<ActionResult<BaseResponse>> Login(LoginDTO input)
+        public async Task<ActionResult<StatusResponse>> Login(Login input)
         {
             try
             {
@@ -135,7 +160,7 @@ namespace webapi.Controllers
 
                     if (invalid)
                     {
-                        var response = new BaseResponse
+                        var response = new StatusResponse
                         {
                             Status = false,
                             Message = "Your username or password is incorrect"
@@ -146,7 +171,7 @@ namespace webapi.Controllers
                     {
                         var loginCredentials = new SigningCredentials(
                             new SymmetricSecurityKey(
-                                System.Text.Encoding.UTF8.GetBytes(_configuration!["JWT:SigningKey"]!)),
+                                Encoding.UTF8.GetBytes(_configuration!["JWT:SigningKey"]!)),
                                 SecurityAlgorithms.HmacSha256);
 
                         var claims = new List<Claim>
@@ -169,13 +194,14 @@ namespace webapi.Controllers
                             Email = user.Email,
                         };
 
-                        var response = new BaseResponse
+                        var response = new StatusResponse
                         {
                             Status = true,
                             Message = "Successfully authenticated.",
                             Data = new
                             {
-                                token, userInfo
+                                token,
+                                userInfo
                             }
                         };
                         return response;
@@ -185,7 +211,7 @@ namespace webapi.Controllers
                 {
                     var details = new ValidationProblemDetails(ModelState);
 
-                    var response = new BaseResponse
+                    var response = new StatusResponse
                     {
                         Status = false,
                         Message = new Exception(details.Title).Message
@@ -204,11 +230,6 @@ namespace webapi.Controllers
                 return StatusCode(StatusCodes.Status401Unauthorized, exceptionDetails);
             }
         }
-
-
-        //[HttpGet]
-        //public async Task<ActionResult<BaseResponse>> ConfirmEmail(int code)
-        //{}
 
     }
     public class UserInfo
