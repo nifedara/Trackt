@@ -1,0 +1,403 @@
+openapi: 3.0.3
+info:
+  version: v1
+  title: Trackt API
+  description: |-
+  
+    **An API to track your travels**.
+
+    ![Travel image](https://res.cloudinary.com/dbtngbdgn/image/upload/v1706689562/Panama_2dc45fad-7790-4b19-89ac-96595805d30b.jpg)
+
+    ---
+    ### Auth
+    To use the action menthods, you need to add a **token** to the `Authorization` header.
+
+    To get a **token**:
+    1. Create a User with [POST /Account/Create](#post_create)
+    1. Get a **token** by calling [POST/Login](#post_login) with your **User** credentials
+
+    ### Destinations
+    They are the heart of this API. **Users** can add their destinations.
+    
+    To create a destination, **Users** will need to upload an image of the destination
+    
+  contact:
+    name: API Support
+    url: https://trackt.com
+    email: mytracktapp@gmail.com
+  license:
+    url: https://www.apache.org/licenses/LICENSE-2.0.html 
+    name: Apache 2.0
+
+servers:   
+- url: http://10.65.10.29/
+paths: 
+  /users:
+    post:
+      summary: Register User
+      tags:
+        - Account
+      description: Create a new user account
+      requestBody: 
+        content: 
+          application/json: 
+            schema:
+              $ref: '#/components/schemas/User' 
+              
+      security:
+        - {} #means optional authorization
+        - Token: []  
+        
+      responses:
+        201:
+            description: Successfully created a new user
+            headers:
+              Location:
+                schema:
+                  type: string
+            content:
+                application/json: 
+                  schema:
+                    $ref: '#/components/schemas/StatusResponse'
+  /users/{id}:
+    parameters:
+      - schema:
+          type: integer
+        name: id
+        in: path
+        required: true
+    get:
+      tags:
+        - Account
+      summary: View User
+      description: Access User details
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+    put: 
+      tags:
+        - Account
+      summary: Modify User
+      description: Change User details
+      responses:
+        '200':
+          description: Successfully updated User
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StatusResponse'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/User'
+    delete:
+      tags:
+        - Account
+      summary: Delete User
+      responses:
+        '204':
+          description: No Content 
+
+  /confirm-email:
+    get:
+      tags:
+        - Account  
+      description: Confirm a new user's email
+      parameters:
+      - name: userId
+        description: the user's Id
+        in: query
+        schema: 
+          type: string
+      - name: token
+        description: the user's token
+        in: query
+        schema:
+          type: string
+      responses:
+        200:
+          description: Success
+          content: 
+            application/json: 
+              schema:
+                type: object
+                properties:
+                    status:
+                        type: boolean
+                    message:
+                        type: string
+                    data: 
+                        type: object
+                        nullable: true
+  /login:
+    post:
+        tags:
+            - Account
+        description: Log in to user's account
+        requestBody:
+            content:
+                application/json:
+                    schema:
+                        type: object
+                        example:
+                            email: engineeer@gmail.com
+                            password: 1amASoftwareEngineer
+                        properties:
+                            eamil:
+                                type: string
+                            password:
+                                type: string
+                                format: password
+        responses:
+            200:
+                description: Successfully Authenticated
+                content:
+                    application/json:
+                        schema:
+                            type: object
+                            example:
+                                status: true
+                                message: Successfully authenticated.
+                                data: {
+                                    token: 1this2is3your4token5,
+                                    userInfo: {
+                                        name: Engineer,
+                                        email: engineer@gmail.com
+                                              }
+                                      }
+                            properties:
+                                status:
+                                    type: boolean
+                                message:
+                                    type: string
+                                data: 
+                                    type: object
+  /trips:
+    post:
+      tags:
+        - Trip
+      summary: Create Trip
+      description:  Create a new trip
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Trip'
+      responses:
+        '201':
+          description: Successfully created a new trip
+          headers: 
+            Location:
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StatusResponse'
+    get:
+      tags:
+        - Trip
+      summary: List Trip(s)
+      description: List one or all trip(s) for User
+      parameters: 
+      - name: tripId
+        in: query
+        required: false
+        schema:
+          type: integer
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StatusResponse'
+  /trips/{id}:
+    parameters: 
+      - schema:
+          type: integer
+        name: id
+        in: path
+        required: true
+
+    put:
+      tags:
+        - Trip
+      summary: Modify Trip
+      description: Modify a User trip
+      responses:
+        '200':
+          description: Successfully updated Trip
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StatusResponse'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Trip'
+    delete:
+      tags:
+        - Trip
+      summary: Delete Trip
+      description: Delete a Trip
+      responses:
+        '204':
+          description: No Content
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StatusResponse'
+  /trip/{id}/itineraries:
+    parameters:
+      - schema:
+          type: integer
+        name: id
+        in: path
+        description: tripId
+        required: true
+    get:
+      tags:
+        - Trip
+      summary: List Itineraries For Trip
+      description: Get all itineraries for trip
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StatusResponse'
+    post:
+      tags:
+        - Trip
+      summary: Create Trip Itinerary
+      description: Create itinerary
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Itinerary'
+
+  /itinerary/{id}:
+    parameters:
+      - schema:
+          type: integer
+        name: id
+        in: path
+        description: itineraryId
+        required: true
+    get:
+      tags:
+        - Itinerary
+      summary: View Itinerary
+      description: View Itinerary
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StatusResponse'
+    put:
+      tags:
+        - Itinerary
+      summary: Modify Itinerary
+      description: Update an Itinerary
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StatusResponse'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Itinerary'
+    delete:
+      tags:
+        - Itinerary
+      summary: Delete Itinerary
+      description: Delete an Itinerary
+      responses:
+        204:
+          description: No Content
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StatusResponse'
+
+components:
+    securitySchemes:
+        Token:
+            type: http
+            scheme: bearer
+            bearerFormat: JWT
+            description: Please enter token
+    schemas:
+      User:
+        type: object
+        properties: 
+          name:
+            type: string
+          email:
+            type: string
+          password:
+            type: string
+      Trip:
+        type: object
+        properties:
+          id:
+            type: integer
+          name:
+            type: string
+          startDate:
+            type: string
+          endDate:
+            type: string
+          status:
+            type: string
+      Itinerary:
+        type: object
+        properties:
+          title:
+            type: string
+          details:
+            type: string
+          status:
+            type: string
+          tripId:
+            type: string
+          userId:
+            type: string
+      StatusResponse:
+        type: object
+        properties:
+          status:
+            type: boolean
+          message:
+            type: string
+          data:
+            type: object
+tags:
+    - name: Account
+      description: Users and aunthentication
+
+    - name: Trip
+      description: Travel destinations
+    
+    - name: Itinerary
+      description: Travel itinerary
+externalDocs:
+    url: https://trackt.com
+    description: Hosted docs for Trackt
