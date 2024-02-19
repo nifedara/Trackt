@@ -1,4 +1,6 @@
 openapi: 3.0.3
+security:
+        - Token: [] 
 info:
   version: v1
   title: Trackt API
@@ -30,7 +32,7 @@ info:
     name: Apache 2.0
 
 servers:   
-- url: http://10.65.10.29/
+- url: /api
 paths: 
   /users:
     post:
@@ -42,11 +44,7 @@ paths:
         content: 
           application/json: 
             schema:
-              $ref: '#/components/schemas/User' 
-              
-      security:
-        - {} #means optional authorization
-        - Token: []  
+              $ref: '#/components/schemas/User'  
         
       responses:
         201:
@@ -59,6 +57,7 @@ paths:
                 application/json: 
                   schema:
                     $ref: '#/components/schemas/StatusResponse'
+      security: [] 
   /users/{id}:
     parameters:
       - schema:
@@ -101,7 +100,7 @@ paths:
       summary: Delete User
       responses:
         '204':
-          description: No Content 
+          description: No Content
 
   /confirm-email:
     get:
@@ -134,21 +133,19 @@ paths:
                     data: 
                         type: object
                         nullable: true
-  /login:
+  /sessions:
     post:
         tags:
-            - Account
+        - Account
+        summary: Start Session (Login)
         description: Log in to user's account
         requestBody:
             content:
                 application/json:
                     schema:
                         type: object
-                        example:
-                            email: engineeer@gmail.com
-                            password: 1amASoftwareEngineer
                         properties:
-                            eamil:
+                            email:
                                 type: string
                             password:
                                 type: string
@@ -159,24 +156,8 @@ paths:
                 content:
                     application/json:
                         schema:
-                            type: object
-                            example:
-                                status: true
-                                message: Successfully authenticated.
-                                data: {
-                                    token: 1this2is3your4token5,
-                                    userInfo: {
-                                        name: Engineer,
-                                        email: engineer@gmail.com
-                                              }
-                                      }
-                            properties:
-                                status:
-                                    type: boolean
-                                message:
-                                    type: string
-                                data: 
-                                    type: object
+                          $ref: '#/components/schemas/StatusResponse'
+        security: [] 
   /trips:
     post:
       tags:
