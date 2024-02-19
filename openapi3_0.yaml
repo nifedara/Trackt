@@ -15,13 +15,11 @@ info:
     To use the action menthods, you need to add a **token** to the `Authorization` header.
 
     To get a **token**:
-    1. Create a User with [POST /Account/Create](#post_create)
-    1. Get a **token** by calling [POST/Login](#post_login) with your **User** credentials
+    1. Create a User with [POST/Account/users](#post_create)
+    1. Get a **token** by calling [POST/Account/sessions](#post_login) with your **User** credentials
 
-    ### Destinations
-    They are the heart of this API. **Users** can add their destinations.
-    
-    To create a destination, **Users** will need to upload an image of the destination
+    ### Trips
+    They are the heart of this API. **Users** can add their trips.
     
   contact:
     name: API Support
