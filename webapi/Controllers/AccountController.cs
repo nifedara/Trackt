@@ -9,6 +9,9 @@ using Serilog;
 using Trackt.Models;
 using Trackt.Services;
 using Trackt.DTO;
+using System.ComponentModel.DataAnnotations;
+using Newtonsoft.Json.Linq;
+using Microsoft.Extensions.Caching.Memory;
 
 namespace Trackt.Controllers
 {
@@ -21,20 +24,23 @@ namespace Trackt.Controllers
         private readonly UserManager<TracktUser>? _userManager;
         private readonly SignInManager<TracktUser>? _signInManager;
         private readonly IMailService _mailSender;
+        private readonly IMemoryCache _memoryCache;
 
         public AccountController(ApplicationDbContext? context, IConfiguration? configuration,
-            UserManager<TracktUser>? userManager, SignInManager<TracktUser>? signInManager, IMailService mailSender)
+            UserManager<TracktUser>? userManager, SignInManager<TracktUser>? signInManager, IMailService mailSender, IMemoryCache memoryCache)
         {
             _context = context;
             _configuration = configuration;
             _userManager = userManager;
             _signInManager = signInManager;
             _mailSender = mailSender;
+            _memoryCache = memoryCache;
         }
 
 
         [HttpPost]
-        //[ResponseCache(CacheProfileName = "NoCache")] --- Fix your caching //TODO
+        //[Route("//users]")]
+        [ResponseCache(NoStore = true)] //caching - don't cache the data
         public async Task<ActionResult<StatusResponse>> Create(CreateAccount input)
         {
             try
@@ -113,6 +119,57 @@ namespace Trackt.Controllers
         }
 
         [HttpGet]
+        //[Route("//users/{id}]")]
+        [ResponseCache(Location = ResponseCacheLocation.Any, Duration = 60)]
+        public async Task<ActionResult<StatusResponse>> ViewUser([FromRoute][Required] string? id)
+        {
+            try 
+            {
+                var user = await _userManager!.FindByIdAsync(id!);
+
+                if (user == null)
+                {
+                    var response = new StatusResponse
+                    {
+                        Status = false,
+                        Message = "User does not exist"
+                    };
+                    return response;
+                }
+                else
+                {
+                    UserInfo userInfo = new()
+                    {
+                        Name = user.Name,
+                        Email = user.Email,
+                    };
+
+                    var response = new StatusResponse
+                    {
+                        Status = true,
+                        Message = "Successfully",
+                        Data = new
+                        { userInfo }
+                    };
+                    return response;
+                }
+            }
+            catch (Exception ex)
+            {
+                var exceptionDetails = new ProblemDetails
+                {
+                    Detail = ex.Message,
+                    Status = StatusCodes.Status500InternalServerError,
+                    Type = "https://tools.ietf.org/html/rfc7231#section-6.6.1"
+                };
+                return StatusCode(StatusCodes.Status500InternalServerError, exceptionDetails);
+
+            }
+        }
+
+        [HttpGet]
+        //[Route("//users/confirm-email]")]
+        [ResponseCache(NoStore = true)]
         public async Task<ActionResult<StatusResponse>> ConfirmEmail(string userId, string? token)
         {
             var user = await _userManager!.FindByEmailAsync(userId);
@@ -149,6 +206,8 @@ namespace Trackt.Controllers
 
 
         [HttpPost]
+        //[Route("//sessions]")]
+        [ResponseCache(Location = ResponseCacheLocation.Any, Duration = 60)]
         public async Task<ActionResult<StatusResponse>> Login(Login input)
         {
             try
@@ -181,7 +240,7 @@ namespace Trackt.Controllers
                             issuer: _configuration["JWT:Issuer"],
                             audience: _configuration["JWT:Audience"],
                             claims: claims,
-                            expires: DateTime.Now.AddSeconds(3600),
+                            expires: DateTime.Now.AddSeconds(300),
                             signingCredentials: loginCredentials);
 
                         var jwtString = new JwtSecurityTokenHandler()
