@@ -12,6 +12,7 @@ using Trackt.DTO;
 using System.ComponentModel.DataAnnotations;
 using Newtonsoft.Json.Linq;
 using Microsoft.Extensions.Caching.Memory;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Trackt.Controllers
 {
@@ -118,6 +119,7 @@ namespace Trackt.Controllers
             }
         }
 
+        [Authorize]
         [HttpGet]
         //[Route("//users/{id}]")]
         [ResponseCache(Location = ResponseCacheLocation.Any, Duration = 60)]
@@ -168,6 +170,7 @@ namespace Trackt.Controllers
         }
 
         [HttpGet]
+        [Authorize]
         //[Route("//users/confirm-email]")]
         [ResponseCache(NoStore = true)]
         public async Task<ActionResult<StatusResponse>> ConfirmEmail(string userId, string? token)
