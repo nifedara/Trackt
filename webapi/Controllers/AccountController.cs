@@ -18,6 +18,7 @@ namespace Trackt.Controllers
 {
     [Route("api/[controller]/[action]")]
     [ApiController]
+    [Authorize]
     public class AccountController : ControllerBase
     {
         private readonly ApplicationDbContext? _context;
@@ -38,7 +39,7 @@ namespace Trackt.Controllers
             _memoryCache = memoryCache;
         }
 
-
+        [AllowAnonymous]
         [HttpPost]
         //[Route("//users]")]
         [ResponseCache(NoStore = true)] //caching - don't cache the data
@@ -119,7 +120,6 @@ namespace Trackt.Controllers
             }
         }
 
-        [Authorize]
         [HttpGet]
         //[Route("//users/{id}]")]
         [ResponseCache(Location = ResponseCacheLocation.Any, Duration = 60)]
@@ -170,7 +170,6 @@ namespace Trackt.Controllers
         }
 
         [HttpGet]
-        [Authorize]
         //[Route("//users/confirm-email]")]
         [ResponseCache(NoStore = true)]
         public async Task<ActionResult<StatusResponse>> ConfirmEmail(string userId, string? token)
@@ -207,7 +206,7 @@ namespace Trackt.Controllers
             }
         }
 
-
+        [AllowAnonymous]
         [HttpPost]
         //[Route("//sessions]")]
         [ResponseCache(Location = ResponseCacheLocation.Any, Duration = 60)]
