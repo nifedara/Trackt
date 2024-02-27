@@ -10,13 +10,13 @@ using Trackt.Models;
 using Trackt.Services;
 using Trackt.DTO;
 using System.ComponentModel.DataAnnotations;
-using Newtonsoft.Json.Linq;
+using Swashbuckle.AspNetCore.Annotations;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.AspNetCore.Authorization;
 
 namespace Trackt.Controllers
 {
-    [Route("api/[controller]/[action]")]
+    [Route("")]
     [ApiController]
     [Authorize]
     public class AccountController : ControllerBase
@@ -29,7 +29,8 @@ namespace Trackt.Controllers
         private readonly IMemoryCache _memoryCache;
 
         public AccountController(ApplicationDbContext? context, IConfiguration? configuration,
-            UserManager<TracktUser>? userManager, SignInManager<TracktUser>? signInManager, IMailService mailSender, IMemoryCache memoryCache)
+            UserManager<TracktUser>? userManager, SignInManager<TracktUser>? signInManager, 
+            IMailService mailSender, IMemoryCache memoryCache)
         {
             _context = context;
             _configuration = configuration;
@@ -40,9 +41,11 @@ namespace Trackt.Controllers
         }
 
         [AllowAnonymous]
-        [HttpPost]
-        //[Route("//users]")]
+        [HttpPost("users")]
         [ResponseCache(NoStore = true)] //caching - don't cache the data
+        [SwaggerOperation(
+            Summary = "Register User",
+            Description = "Create a new user account")]
         public async Task<ActionResult<StatusResponse>> Create(CreateAccount input)
         {
             try
@@ -120,9 +123,9 @@ namespace Trackt.Controllers
             }
         }
 
-        [HttpGet]
-        //[Route("//users/{id}]")]
+        [HttpGet("users/{id}")]
         [ResponseCache(Location = ResponseCacheLocation.Any, Duration = 60)]
+        [SwaggerOperation(Summary = "View User", Description = "Access User details")]
         public async Task<ActionResult<StatusResponse>> ViewUser([FromRoute][Required] string? id)
         {
             try 
@@ -169,9 +172,9 @@ namespace Trackt.Controllers
             }
         }
 
-        [HttpGet]
-        //[Route("//users/confirm-email]")]
+        [HttpGet("users/confirm-email")]
         [ResponseCache(NoStore = true)]
+        [SwaggerOperation(Summary = "Confirm email", Description = "Verify User email")]
         public async Task<ActionResult<StatusResponse>> ConfirmEmail(string userId, string? token)
         {
             var user = await _userManager!.FindByEmailAsync(userId);
@@ -207,9 +210,9 @@ namespace Trackt.Controllers
         }
 
         [AllowAnonymous]
-        [HttpPost]
-        //[Route("//sessions]")]
+        [HttpPost("sessions")]
         [ResponseCache(Location = ResponseCacheLocation.Any, Duration = 60)]
+        [SwaggerOperation(Summary = "Start session(Log in)", Description = "Log in to User's account")]
         public async Task<ActionResult<StatusResponse>> Login(Login input)
         {
             try

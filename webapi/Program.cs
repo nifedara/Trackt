@@ -65,6 +65,7 @@ builder.Services.AddSwaggerGen(options =>
             Array.Empty<string>()
         }
     });
+    options.EnableAnnotations();
 });
 builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection"),
      x => x.MigrationsHistoryTable("__efmigrationshistory"))); // options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")))
