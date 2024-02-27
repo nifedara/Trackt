@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Trackt.DTO
 {
-    public class CreateDestination
+    public class CreateTrip
     {
         [Required]
         public string? DestinationName { get; set; }
