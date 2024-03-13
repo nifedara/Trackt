@@ -31,6 +31,9 @@ namespace Trackt.Controllers
         [HttpPost]
         [ResponseCache(Location = ResponseCacheLocation.Any, Duration = 60)]
         [SwaggerOperation(Summary = "Create Trip", Description = "Create a new Trip")]
+        [SwaggerResponse(StatusCodes.Status201Created, "Trip created")]
+        [SwaggerResponse(StatusCodes.Status401Unauthorized, "Unauthorized")]
+        [SwaggerResponse(StatusCodes.Status500InternalServerError, "Internal Server Error")]
         public async Task<ActionResult<StatusResponse>> Create([FromForm] CreateTrip input)
         {
             try
@@ -132,6 +135,9 @@ namespace Trackt.Controllers
         [HttpGet]
         [ResponseCache(Location = ResponseCacheLocation.Any, Duration = 60)]
         [SwaggerOperation(Summary = "List Trip(s)", Description = "List one or all trip(s) for a User")]
+        [SwaggerResponse(StatusCodes.Status200OK, "Successful")]
+        [SwaggerResponse(StatusCodes.Status401Unauthorized, "Unauthorized")]
+        [SwaggerResponse(StatusCodes.Status500InternalServerError, "Internal Server Error")]
         public async Task<ActionResult<StatusResponse>> Get(int? tripId)
         {
             try
