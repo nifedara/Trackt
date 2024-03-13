@@ -10,6 +10,7 @@ using Serilog;
 using Trackt.Models;
 using Trackt.Settings;
 using Trackt.Services;
+using Trackt.Swagger;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -51,22 +52,12 @@ builder.Services.AddSwaggerGen(options =>
         BearerFormat = "JWT",
         Scheme = "bearer"
     });
-    options.AddSecurityRequirement(new OpenApiSecurityRequirement
-    {
-        {
-            new OpenApiSecurityScheme
-            {
-                Reference = new OpenApiReference
-                {
-                    Type=ReferenceType.SecurityScheme,
-                    Id="Bearer"
-                }
-            },
-            Array.Empty<string>()
-        }
-    });
+    options.OperationFilter<AuthRequirementFilter>();
+    options.DocumentFilter<CustomDocumentFilter>();
     options.EnableAnnotations();
 });
+
+//DbContext
 builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection"),
      x => x.MigrationsHistoryTable("__efmigrationshistory"))); // options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")))
 builder.Services.AddIdentity<TracktUser, IdentityRole>(options =>
