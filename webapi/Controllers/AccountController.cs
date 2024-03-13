@@ -11,7 +11,6 @@ using Trackt.Services;
 using Trackt.DTO;
 using System.ComponentModel.DataAnnotations;
 using Swashbuckle.AspNetCore.Annotations;
-using Microsoft.Extensions.Caching.Memory;
 using Microsoft.AspNetCore.Authorization;
 
 namespace Trackt.Controllers
@@ -26,27 +25,26 @@ namespace Trackt.Controllers
         private readonly UserManager<TracktUser>? _userManager;
         private readonly SignInManager<TracktUser>? _signInManager;
         private readonly IMailService _mailSender;
-        private readonly IMemoryCache _memoryCache;
 
         public AccountController(ApplicationDbContext? context, IConfiguration? configuration,
             UserManager<TracktUser>? userManager, SignInManager<TracktUser>? signInManager, 
-            IMailService mailSender, IMemoryCache memoryCache)
+            IMailService mailSender)
         {
             _context = context;
             _configuration = configuration;
             _userManager = userManager;
             _signInManager = signInManager;
             _mailSender = mailSender;
-            _memoryCache = memoryCache;
         }
 
         [AllowAnonymous]
         [HttpPost("users")]
         [ResponseCache(NoStore = true)] //caching - don't cache the data
-        [SwaggerOperation(
-            Summary = "Register User",
-            Description = "Create a new user account")]
-        public async Task<ActionResult<StatusResponse>> Create(CreateAccount input)
+        [SwaggerOperation(Summary = "Register User", Description = "Create a new user account")]
+        [SwaggerResponse(StatusCodes.Status201Created, "User created")]
+        [SwaggerResponse(StatusCodes.Status401Unauthorized, "Unauthorized")]
+        [SwaggerResponse(StatusCodes.Status500InternalServerError, "Internal Server Error")]
+        public async Task<ActionResult<StatusResponse>> Create(User input)
         {
             try
             {
@@ -123,9 +121,13 @@ namespace Trackt.Controllers
             }
         }
 
+
         [HttpGet("users/{id}")]
         [ResponseCache(Location = ResponseCacheLocation.Any, Duration = 60)]
         [SwaggerOperation(Summary = "View User", Description = "Access User details")]
+        [SwaggerResponse(StatusCodes.Status200OK, "Successful")]
+        [SwaggerResponse(StatusCodes.Status401Unauthorized, "Unauthorized")]
+        [SwaggerResponse(StatusCodes.Status500InternalServerError, "Internal Server Error")]
         public async Task<ActionResult<StatusResponse>> ViewUser([FromRoute][Required] string? id)
         {
             try 
@@ -172,9 +174,11 @@ namespace Trackt.Controllers
             }
         }
 
+
         [HttpGet("users/confirm-email")]
         [ResponseCache(NoStore = true)]
         [SwaggerOperation(Summary = "Confirm email", Description = "Verify User email")]
+        [SwaggerResponse(StatusCodes.Status500InternalServerError, "Internal Server Error")]
         public async Task<ActionResult<StatusResponse>> ConfirmEmail(string userId, string? token)
         {
             var user = await _userManager!.FindByEmailAsync(userId);
@@ -209,10 +213,16 @@ namespace Trackt.Controllers
             }
         }
 
+
         [AllowAnonymous]
         [HttpPost("sessions")]
         [ResponseCache(Location = ResponseCacheLocation.Any, Duration = 60)]
         [SwaggerOperation(Summary = "Start session(Log in)", Description = "Log in to User's account")]
+        [SwaggerResponse(StatusCodes.Status200OK, "Successfully Authenticated")]
+        [SwaggerResponse(StatusCodes.Status401Unauthorized, "Unauthorized")]
+        [SwaggerResponse(StatusCodes.Status500InternalServerError, "Internal Server Error")]
+        [ProducesResponseType(typeof(StatusResponse), 401)]
+        [ProducesResponseType(typeof(StatusResponse), 500)]
         public async Task<ActionResult<StatusResponse>> Login(Login input)
         {
             try
