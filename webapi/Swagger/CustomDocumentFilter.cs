@@ -16,17 +16,7 @@ namespace Trackt.Swagger
 
                 "\n --- \n" +
                 "#### Auth \n" +
-                "To use protected action methods, you need to add a **token** to the `Authorization` header. \n" +
-                "\n To get a **token**:\n" +
-
-                "1. Create a User with [POST /Account/users](#post_create) \n" +
-                "2. Get a **token** by calling [POST/Account/sessions](#post_login) with your **User** credentials",
-                Contact = new OpenApiContact
-                {
-                    Name = "Trackt API Support",
-                    Email = "mytracktapp@gmail.com",
-                    //Url = new Uri("https://trackt.com")
-                }
+                "To use protected action methods, you need to add a **token** to the `Authorization` header. \n"
             };
         }
     }
